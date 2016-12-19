@@ -14,12 +14,16 @@ class ContactsViewController: UIViewController {
     @IBOutlet weak var messageLabel: UILabel!
     
     var contactsViewModel: ContactsViewModel!
+    var contactsFlowCoordinator: ContactsFlowCoordinator!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        //This initialization are inyected from other controller when prepare segue is called "NORMALLY"
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
         contactsViewModel = ContactsViewModel(contactsController: appDelegate.contactsController)
+        contactsFlowCoordinator = ContactsFlowCoordinator()
+        
         bindDataState()
         bindUserActionsOnDataState()
         showMessageLabel(message: nil)
@@ -69,6 +73,10 @@ class ContactsViewController: UIViewController {
         contactsTableView.isHidden = hideContactsTableView
         messageLabel.isHidden = !hideContactsTableView
         messageLabel.text = message
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        contactsFlowCoordinator.prepareforSegue(segue: segue)
     }
 
 }

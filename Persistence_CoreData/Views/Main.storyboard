@@ -49,7 +49,13 @@
                             <constraint firstItem="JgS-G6-2rP" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="uPh-vz-fHo"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="My Contacts" id="j52-iK-vCy"/>
+                    <navigationItem key="navigationItem" title="My Contacts" id="j52-iK-vCy">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="UAj-Xw-Pyd">
+                            <connections>
+                                <segue destination="Bfs-IE-jYo" kind="show" identifier="CreateContact" id="EPK-Vn-Tvz"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="contactsTableView" destination="JgS-G6-2rP" id="FoD-sE-VKg"/>
                         <outlet property="messageLabel" destination="wCY-Sq-Tj1" id="DTl-cT-Zcd"/>
@@ -58,6 +64,24 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1056.8" y="109.29535232383809"/>
+        </scene>
+        <!--Create Contact View Controller-->
+        <scene sceneID="ymM-pM-dBj">
+            <objects>
+                <viewController id="Bfs-IE-jYo" customClass="CreateContactViewController" customModule="Persistence_CoreData" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="dep-jp-vVH"/>
+                        <viewControllerLayoutGuide type="bottom" id="bKi-WG-Grm"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="kpz-ZP-9Es">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="jX1-H2-eUO" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1057" y="809"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="7q5-fa-lMD">

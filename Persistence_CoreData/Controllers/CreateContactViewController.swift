@@ -7,13 +7,19 @@
 //
 
 import UIKit
+import CoreData
 
 class CreateContactViewController: UIViewController {
 
+    var createContactViewModel: CreateContactViewModel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + 3) {
+            self.createContactViewModel.saveDemoObject()
+        }
+        
     }
 
     override func didReceiveMemoryWarning() {

@@ -42,6 +42,7 @@ class ContactDataStack: NSObject {
             let urls = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
             let docURL = urls[urls.endIndex - 1]
             let storeURL = docURL.appendingPathComponent(ContactPersistentStore.name)
+            print("DataStrore path: \(storeURL)")
             
             do {
                 try persistentStoreCoordinator.addPersistentStore(ofType: NSSQLiteStoreType,

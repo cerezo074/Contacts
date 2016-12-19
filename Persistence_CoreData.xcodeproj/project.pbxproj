@@ -17,7 +17,9 @@
 		E625D1B81E08434C00F4DBBF /* ContactsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E625D1B71E08434C00F4DBBF /* ContactsViewController.swift */; };
 		E625D1BB1E0844B500F4DBBF /* ContactsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E625D1BA1E0844B500F4DBBF /* ContactsViewModel.swift */; };
 		E625D1BE1E08705B00F4DBBF /* CreateContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E625D1BD1E08705B00F4DBBF /* CreateContactViewController.swift */; };
-		E625D1C01E08708600F4DBBF /* EditContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E625D1BF1E08708600F4DBBF /* EditContactViewController.swift */; };
+		E625D1C31E08848100F4DBBF /* ContactsFlowCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E625D1C21E08848100F4DBBF /* ContactsFlowCoordinator.swift */; };
+		E625D1C51E088B0800F4DBBF /* ContactsDAO.swift in Sources */ = {isa = PBXBuildFile; fileRef = E625D1C41E088B0800F4DBBF /* ContactsDAO.swift */; };
+		E625D1C71E089E3500F4DBBF /* CreateContactsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E625D1C61E089E3500F4DBBF /* CreateContactsViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,7 +35,9 @@
 		E625D1B71E08434C00F4DBBF /* ContactsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ContactsViewController.swift; path = Controllers/ContactsViewController.swift; sourceTree = "<group>"; };
 		E625D1BA1E0844B500F4DBBF /* ContactsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ContactsViewModel.swift; path = ViewModels/ContactsViewModel.swift; sourceTree = "<group>"; };
 		E625D1BD1E08705B00F4DBBF /* CreateContactViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CreateContactViewController.swift; path = Controllers/CreateContactViewController.swift; sourceTree = "<group>"; };
-		E625D1BF1E08708600F4DBBF /* EditContactViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EditContactViewController.swift; path = Controllers/EditContactViewController.swift; sourceTree = "<group>"; };
+		E625D1C21E08848100F4DBBF /* ContactsFlowCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ContactsFlowCoordinator.swift; path = Coordinators/ContactsFlowCoordinator.swift; sourceTree = "<group>"; };
+		E625D1C41E088B0800F4DBBF /* ContactsDAO.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ContactsDAO.swift; path = DataModels/ContactsDAO.swift; sourceTree = "<group>"; };
+		E625D1C61E089E3500F4DBBF /* CreateContactsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CreateContactsViewModel.swift; path = ViewModels/CreateContactsViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +72,7 @@
 		E61180A61E044BD50005858E /* Persistence_CoreData */ = {
 			isa = PBXGroup;
 			children = (
+				E625D1C11E08845A00F4DBBF /* Coordinator */,
 				E625D1B91E08449000F4DBBF /* ViewModels */,
 				E625D1B21E08420B00F4DBBF /* Views */,
 				E625D1B11E0841F000F4DBBF /* Controllers */,
@@ -84,6 +89,7 @@
 			children = (
 				E61180BD1E046A3B0005858E /* ContactModel.xcdatamodeld */,
 				E61180C01E046B1A0005858E /* ContactDataStack.swift */,
+				E625D1C41E088B0800F4DBBF /* ContactsDAO.swift */,
 			);
 			name = DataModels;
 			sourceTree = "<group>";
@@ -101,7 +107,6 @@
 			children = (
 				E625D1BD1E08705B00F4DBBF /* CreateContactViewController.swift */,
 				E625D1B71E08434C00F4DBBF /* ContactsViewController.swift */,
-				E625D1BF1E08708600F4DBBF /* EditContactViewController.swift */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -119,8 +124,17 @@
 			isa = PBXGroup;
 			children = (
 				E625D1BA1E0844B500F4DBBF /* ContactsViewModel.swift */,
+				E625D1C61E089E3500F4DBBF /* CreateContactsViewModel.swift */,
 			);
 			name = ViewModels;
+			sourceTree = "<group>";
+		};
+		E625D1C11E08845A00F4DBBF /* Coordinator */ = {
+			isa = PBXGroup;
+			children = (
+				E625D1C21E08848100F4DBBF /* ContactsFlowCoordinator.swift */,
+			);
+			name = Coordinator;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -197,12 +211,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				E61180C11E046B1A0005858E /* ContactDataStack.swift in Sources */,
+				E625D1C71E089E3500F4DBBF /* CreateContactsViewModel.swift in Sources */,
 				E625D1BB1E0844B500F4DBBF /* ContactsViewModel.swift in Sources */,
-				E625D1C01E08708600F4DBBF /* EditContactViewController.swift in Sources */,
 				E625D1B81E08434C00F4DBBF /* ContactsViewController.swift in Sources */,
 				E61180A81E044BD50005858E /* AppDelegate.swift in Sources */,
 				E61180BF1E046A3B0005858E /* ContactModel.xcdatamodeld in Sources */,
+				E625D1C51E088B0800F4DBBF /* ContactsDAO.swift in Sources */,
 				E625D1BE1E08705B00F4DBBF /* CreateContactViewController.swift in Sources */,
+				E625D1C31E08848100F4DBBF /* ContactsFlowCoordinator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
