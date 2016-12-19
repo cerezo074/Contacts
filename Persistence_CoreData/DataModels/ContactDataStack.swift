@@ -10,8 +10,6 @@ import UIKit
 import CoreData
 
 class ContactDataStack: NSObject {
-
-    static let sharedInstance = ContactDataStack()
     
     struct ContactManagedObjectModel {
         static let name = "ContactModel"
@@ -24,7 +22,7 @@ class ContactDataStack: NSObject {
     
     var managedObjectContext: NSManagedObjectContext?
     
-    private override init() {
+    override init() {
         guard let managedObjectModelPath = Bundle.main.url(forResource: ContactManagedObjectModel.name,
                                                        withExtension: ContactManagedObjectModel.fileExtension) else {
                                                         assertionFailure("Error loading contact scheme path.")
@@ -50,6 +48,7 @@ class ContactDataStack: NSObject {
                                                                   configurationName: nil,
                                                                   at: storeURL,
                                                                   options: nil)
+                
                 print("Persisten Store loaded on coordinator")
             } catch {
                 assertionFailure("Error migrating strore \(error)")

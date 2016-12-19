@@ -8,26 +8,32 @@
 
 /* Begin PBXBuildFile section */
 		E61180A81E044BD50005858E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E61180A71E044BD50005858E /* AppDelegate.swift */; };
-		E61180AA1E044BD50005858E /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E61180A91E044BD50005858E /* ViewController.swift */; };
-		E61180AD1E044BD50005858E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E61180AB1E044BD50005858E /* Main.storyboard */; };
 		E61180AF1E044BD50005858E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E61180AE1E044BD50005858E /* Assets.xcassets */; };
-		E61180B21E044BD50005858E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E61180B01E044BD50005858E /* LaunchScreen.storyboard */; };
 		E61180BF1E046A3B0005858E /* ContactModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E61180BD1E046A3B0005858E /* ContactModel.xcdatamodeld */; };
 		E61180C11E046B1A0005858E /* ContactDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = E61180C01E046B1A0005858E /* ContactDataStack.swift */; };
 		E61180C41E046C770005858E /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E61180C31E046C770005858E /* CoreData.framework */; };
+		E625D1B51E08424100F4DBBF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E625D1B31E08424100F4DBBF /* LaunchScreen.storyboard */; };
+		E625D1B61E08424100F4DBBF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E625D1B41E08424100F4DBBF /* Main.storyboard */; };
+		E625D1B81E08434C00F4DBBF /* ContactsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E625D1B71E08434C00F4DBBF /* ContactsViewController.swift */; };
+		E625D1BB1E0844B500F4DBBF /* ContactsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E625D1BA1E0844B500F4DBBF /* ContactsViewModel.swift */; };
+		E625D1BE1E08705B00F4DBBF /* CreateContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E625D1BD1E08705B00F4DBBF /* CreateContactViewController.swift */; };
+		E625D1C01E08708600F4DBBF /* EditContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E625D1BF1E08708600F4DBBF /* EditContactViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		E61180A41E044BD50005858E /* Persistence_CoreData.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Persistence_CoreData.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E61180A71E044BD50005858E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		E61180A91E044BD50005858E /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		E61180AC1E044BD50005858E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		E61180AE1E044BD50005858E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		E61180B11E044BD50005858E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E61180B31E044BD50005858E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E61180BE1E046A3B0005858E /* ContactModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ContactModel.xcdatamodel; sourceTree = "<group>"; };
 		E61180C01E046B1A0005858E /* ContactDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ContactDataStack.swift; path = DataModels/ContactDataStack.swift; sourceTree = "<group>"; };
 		E61180C31E046C770005858E /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		E625D1B31E08424100F4DBBF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Views/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		E625D1B41E08424100F4DBBF /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Main.storyboard; path = Views/Main.storyboard; sourceTree = "<group>"; };
+		E625D1B71E08434C00F4DBBF /* ContactsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ContactsViewController.swift; path = Controllers/ContactsViewController.swift; sourceTree = "<group>"; };
+		E625D1BA1E0844B500F4DBBF /* ContactsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ContactsViewModel.swift; path = ViewModels/ContactsViewModel.swift; sourceTree = "<group>"; };
+		E625D1BD1E08705B00F4DBBF /* CreateContactViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CreateContactViewController.swift; path = Controllers/CreateContactViewController.swift; sourceTree = "<group>"; };
+		E625D1BF1E08708600F4DBBF /* EditContactViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EditContactViewController.swift; path = Controllers/EditContactViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,12 +68,12 @@
 		E61180A61E044BD50005858E /* Persistence_CoreData */ = {
 			isa = PBXGroup;
 			children = (
+				E625D1B91E08449000F4DBBF /* ViewModels */,
+				E625D1B21E08420B00F4DBBF /* Views */,
+				E625D1B11E0841F000F4DBBF /* Controllers */,
 				E61180BC1E046A270005858E /* DataModels */,
 				E61180A71E044BD50005858E /* AppDelegate.swift */,
-				E61180A91E044BD50005858E /* ViewController.swift */,
-				E61180AB1E044BD50005858E /* Main.storyboard */,
 				E61180AE1E044BD50005858E /* Assets.xcassets */,
-				E61180B01E044BD50005858E /* LaunchScreen.storyboard */,
 				E61180B31E044BD50005858E /* Info.plist */,
 			);
 			path = Persistence_CoreData;
@@ -88,6 +94,33 @@
 				E61180C31E046C770005858E /* CoreData.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E625D1B11E0841F000F4DBBF /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				E625D1BD1E08705B00F4DBBF /* CreateContactViewController.swift */,
+				E625D1B71E08434C00F4DBBF /* ContactsViewController.swift */,
+				E625D1BF1E08708600F4DBBF /* EditContactViewController.swift */,
+			);
+			name = Controllers;
+			sourceTree = "<group>";
+		};
+		E625D1B21E08420B00F4DBBF /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				E625D1B31E08424100F4DBBF /* LaunchScreen.storyboard */,
+				E625D1B41E08424100F4DBBF /* Main.storyboard */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+		E625D1B91E08449000F4DBBF /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				E625D1BA1E0844B500F4DBBF /* ContactsViewModel.swift */,
+			);
+			name = ViewModels;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -122,6 +155,7 @@
 				TargetAttributes = {
 					E61180A31E044BD50005858E = {
 						CreatedOnToolsVersion = 8.1;
+						DevelopmentTeam = RM569R92QA;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -149,9 +183,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E61180B21E044BD50005858E /* LaunchScreen.storyboard in Resources */,
+				E625D1B61E08424100F4DBBF /* Main.storyboard in Resources */,
 				E61180AF1E044BD50005858E /* Assets.xcassets in Resources */,
-				E61180AD1E044BD50005858E /* Main.storyboard in Resources */,
+				E625D1B51E08424100F4DBBF /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -162,33 +196,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E61180AA1E044BD50005858E /* ViewController.swift in Sources */,
 				E61180C11E046B1A0005858E /* ContactDataStack.swift in Sources */,
+				E625D1BB1E0844B500F4DBBF /* ContactsViewModel.swift in Sources */,
+				E625D1C01E08708600F4DBBF /* EditContactViewController.swift in Sources */,
+				E625D1B81E08434C00F4DBBF /* ContactsViewController.swift in Sources */,
 				E61180A81E044BD50005858E /* AppDelegate.swift in Sources */,
 				E61180BF1E046A3B0005858E /* ContactModel.xcdatamodeld in Sources */,
+				E625D1BE1E08705B00F4DBBF /* CreateContactViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXVariantGroup section */
-		E61180AB1E044BD50005858E /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				E61180AC1E044BD50005858E /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		E61180B01E044BD50005858E /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				E61180B11E044BD50005858E /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		E61180B41E044BD50005858E /* Debug */ = {
@@ -288,6 +306,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = RM569R92QA;
 				INFOPLIST_FILE = Persistence_CoreData/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "Example.Persistence-CoreData";
@@ -300,6 +319,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = RM569R92QA;
 				INFOPLIST_FILE = Persistence_CoreData/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "Example.Persistence-CoreData";
