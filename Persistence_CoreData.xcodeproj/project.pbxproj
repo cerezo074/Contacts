@@ -20,9 +20,20 @@
 		E625D1C31E08848100F4DBBF /* ContactsFlowCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E625D1C21E08848100F4DBBF /* ContactsFlowCoordinator.swift */; };
 		E625D1C51E088B0800F4DBBF /* ContactsDAO.swift in Sources */ = {isa = PBXBuildFile; fileRef = E625D1C41E088B0800F4DBBF /* ContactsDAO.swift */; };
 		E625D1C71E089E3500F4DBBF /* CreatePersonViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E625D1C61E089E3500F4DBBF /* CreatePersonViewModel.swift */; };
+		E629753F1E0DA762006DD8F5 /* ContactsDAOTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E629753E1E0DA762006DD8F5 /* ContactsDAOTest.swift */; };
 		E6CAC9301E0C975C0044A43E /* CreateCompanyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6CAC92F1E0C975C0044A43E /* CreateCompanyViewController.swift */; };
 		E6CAC9321E0C97D30044A43E /* CreateCompanyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6CAC9311E0C97D30044A43E /* CreateCompanyViewModel.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E62975361E0DA616006DD8F5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E611809C1E044BD50005858E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E61180A31E044BD50005858E;
+			remoteInfo = Persistence_CoreData;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		E61180A41E044BD50005858E /* Persistence_CoreData.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Persistence_CoreData.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -40,6 +51,9 @@
 		E625D1C21E08848100F4DBBF /* ContactsFlowCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ContactsFlowCoordinator.swift; path = Coordinators/ContactsFlowCoordinator.swift; sourceTree = "<group>"; };
 		E625D1C41E088B0800F4DBBF /* ContactsDAO.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ContactsDAO.swift; path = DataModels/ContactsDAO.swift; sourceTree = "<group>"; };
 		E625D1C61E089E3500F4DBBF /* CreatePersonViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CreatePersonViewModel.swift; path = ViewModels/CreatePersonViewModel.swift; sourceTree = "<group>"; };
+		E62975311E0DA616006DD8F5 /* Persistence_CoreDataTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Persistence_CoreDataTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E62975351E0DA616006DD8F5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E629753E1E0DA762006DD8F5 /* ContactsDAOTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ContactsDAOTest.swift; path = DataModels/ContactsDAOTest.swift; sourceTree = "<group>"; };
 		E6CAC92E1E0C8CFC0044A43E /* ContactModelv2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ContactModelv2.xcdatamodel; sourceTree = "<group>"; };
 		E6CAC92F1E0C975C0044A43E /* CreateCompanyViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CreateCompanyViewController.swift; path = Controllers/CreateCompanyViewController.swift; sourceTree = "<group>"; };
 		E6CAC9311E0C97D30044A43E /* CreateCompanyViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CreateCompanyViewModel.swift; path = ViewModels/CreateCompanyViewModel.swift; sourceTree = "<group>"; };
@@ -54,6 +68,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E629752E1E0DA616006DD8F5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -61,6 +82,7 @@
 			isa = PBXGroup;
 			children = (
 				E61180A61E044BD50005858E /* Persistence_CoreData */,
+				E62975321E0DA616006DD8F5 /* Persistence_CoreDataTests */,
 				E61180A51E044BD50005858E /* Products */,
 				E61180C21E046C760005858E /* Frameworks */,
 			);
@@ -70,6 +92,7 @@
 			isa = PBXGroup;
 			children = (
 				E61180A41E044BD50005858E /* Persistence_CoreData.app */,
+				E62975311E0DA616006DD8F5 /* Persistence_CoreDataTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -144,6 +167,23 @@
 			name = Coordinator;
 			sourceTree = "<group>";
 		};
+		E62975321E0DA616006DD8F5 /* Persistence_CoreDataTests */ = {
+			isa = PBXGroup;
+			children = (
+				E629753D1E0DA743006DD8F5 /* DataModels */,
+				E62975351E0DA616006DD8F5 /* Info.plist */,
+			);
+			path = Persistence_CoreDataTests;
+			sourceTree = "<group>";
+		};
+		E629753D1E0DA743006DD8F5 /* DataModels */ = {
+			isa = PBXGroup;
+			children = (
+				E629753E1E0DA762006DD8F5 /* ContactsDAOTest.swift */,
+			);
+			name = DataModels;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -164,6 +204,24 @@
 			productReference = E61180A41E044BD50005858E /* Persistence_CoreData.app */;
 			productType = "com.apple.product-type.application";
 		};
+		E62975301E0DA616006DD8F5 /* Persistence_CoreDataTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E629753A1E0DA616006DD8F5 /* Build configuration list for PBXNativeTarget "Persistence_CoreDataTests" */;
+			buildPhases = (
+				E629752D1E0DA616006DD8F5 /* Sources */,
+				E629752E1E0DA616006DD8F5 /* Frameworks */,
+				E629752F1E0DA616006DD8F5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E62975371E0DA616006DD8F5 /* PBXTargetDependency */,
+			);
+			name = Persistence_CoreDataTests;
+			productName = Persistence_CoreDataTests;
+			productReference = E62975311E0DA616006DD8F5 /* Persistence_CoreDataTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -178,6 +236,12 @@
 						CreatedOnToolsVersion = 8.1;
 						DevelopmentTeam = RM569R92QA;
 						ProvisioningStyle = Automatic;
+					};
+					E62975301E0DA616006DD8F5 = {
+						CreatedOnToolsVersion = 8.1;
+						LastSwiftMigration = 0810;
+						ProvisioningStyle = Automatic;
+						TestTargetID = E61180A31E044BD50005858E;
 					};
 				};
 			};
@@ -195,6 +259,7 @@
 			projectRoot = "";
 			targets = (
 				E61180A31E044BD50005858E /* Persistence_CoreData */,
+				E62975301E0DA616006DD8F5 /* Persistence_CoreDataTests */,
 			);
 		};
 /* End PBXProject section */
@@ -207,6 +272,13 @@
 				E625D1B61E08424100F4DBBF /* Main.storyboard in Resources */,
 				E61180AF1E044BD50005858E /* Assets.xcassets in Resources */,
 				E625D1B51E08424100F4DBBF /* LaunchScreen.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E629752F1E0DA616006DD8F5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -231,7 +303,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E629752D1E0DA616006DD8F5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E629753F1E0DA762006DD8F5 /* ContactsDAOTest.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		E62975371E0DA616006DD8F5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E61180A31E044BD50005858E /* Persistence_CoreData */;
+			targetProxy = E62975361E0DA616006DD8F5 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		E61180B41E044BD50005858E /* Debug */ = {
@@ -353,6 +441,35 @@
 			};
 			name = Release;
 		};
+		E62975381E0DA616006DD8F5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				INFOPLIST_FILE = Persistence_CoreDataTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "Example.Persistence-CoreDataTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Persistence_CoreData.app/Persistence_CoreData";
+			};
+			name = Debug;
+		};
+		E62975391E0DA616006DD8F5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
+				INFOPLIST_FILE = Persistence_CoreDataTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "Example.Persistence-CoreDataTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Persistence_CoreData.app/Persistence_CoreData";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -373,6 +490,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		E629753A1E0DA616006DD8F5 /* Build configuration list for PBXNativeTarget "Persistence_CoreDataTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E62975381E0DA616006DD8F5 /* Debug */,
+				E62975391E0DA616006DD8F5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 

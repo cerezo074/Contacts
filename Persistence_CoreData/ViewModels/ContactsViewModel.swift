@@ -109,6 +109,10 @@ class ContactsViewModel: NSObject {
         return firstName.capitalized + " " + lastname.capitalized
     }
     
+    func deleteContact(_ at: IndexPath) {
+        
+    }
+    
 }
 
 extension ContactsViewModel: NSFetchedResultsControllerDelegate {

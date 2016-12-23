@@ -16,7 +16,7 @@ struct CreatePersonViewModel: ContactsDAO {
         self.contactsManagedObjectContext = contactsManagedObjectContext
     }
     
-    func saveDemoObject() {
+    func saveDemoPerson() {
         
         guard let monkeysLab = NSEntityDescription.insertNewObject(forEntityName: "Company",
                                                                    into: contactsManagedObjectContext) as? Company else {
@@ -29,7 +29,7 @@ struct CreatePersonViewModel: ContactsDAO {
         monkeysLab.identifier = "medellin@monkeyslab.com"
         
         do {
-            try createPerson(firstName: "Eli",
+            _ = try createPerson(firstName: "Eli",
                              lastname: "Pacheco Hoyos",
                              email: "eph_074@hotmail.com",
                              cellPhone: "3207134957",
@@ -40,5 +40,9 @@ struct CreatePersonViewModel: ContactsDAO {
         } catch {
             print("Error creating demo user: \(error)")
         }
+    }
+    
+    func saveDemoCompany() {
+        
     }
 }

@@ -15,10 +15,6 @@ class CreatePersonViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + 3) {
-            self.createContactViewModel.saveDemoObject()
-        }
         
     }
 

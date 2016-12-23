@@ -21,9 +21,12 @@ class ContactDataStack: NSObject {
     }
     
     var managedObjectContext: NSManagedObjectContext?
+    private(set) var persistenceStoreURL: URL?
     
-    override init() {
-        guard let managedObjectModelPath = Bundle.main.url(forResource: ContactManagedObjectModel.name,
+    init(dataModel: String = ContactManagedObjectModel.name,
+                  persistenStore: String = ContactPersistentStore.name)
+    {
+        guard let managedObjectModelPath = Bundle.main.url(forResource: dataModel,
                                                        withExtension: ContactManagedObjectModel.fileExtension) else {
                                                         assertionFailure("Error loading contact scheme path.")
                                                         return
@@ -37,15 +40,16 @@ class ContactDataStack: NSObject {
         let persistentStoreCoordinator = NSPersistentStoreCoordinator(managedObjectModel: managedObjectModel)
         managedObjectContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
         managedObjectContext?.persistentStoreCoordinator = persistentStoreCoordinator
+
+        let urls = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        let docURL = urls[urls.endIndex - 1]
+        let storeURL = docURL.appendingPathComponent(persistenStore)
+        print("DataStore path: \(storeURL)")
         
         DispatchQueue.global().async {
-            let urls = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-            let docURL = urls[urls.endIndex - 1]
-            let storeURL = docURL.appendingPathComponent(ContactPersistentStore.name)
+            //Use this option for migrations
 //            let options = [NSMigratePersistentStoresAutomaticallyOption: true,
 //                           NSInferMappingModelAutomaticallyOption: true]
-            print("DataStrore path: \(storeURL)")
-            
             do {
                 try persistentStoreCoordinator.addPersistentStore(ofType: NSSQLiteStoreType,
                                                                   configurationName: nil,
@@ -56,6 +60,25 @@ class ContactDataStack: NSObject {
             } catch {
                 assertionFailure("Error migrating store \(error)")
             }
+        }
+        
+        persistenceStoreURL = storeURL
+    }
+    
+    func emptyContactPersistenceStore() -> Bool {
+        guard let moc = managedObjectContext else { return false }
+        let personRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Person")
+        let deletePersonRequest = NSBatchDeleteRequest(fetchRequest: personRequest)
+        let companyRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Company")
+        let deleteCompanyRequest = NSBatchDeleteRequest(fetchRequest: companyRequest)
+        
+        do {
+            try managedObjectContext?.persistentStoreCoordinator?.execute(deletePersonRequest, with: moc)
+            try managedObjectContext?.persistentStoreCoordinator?.execute(deleteCompanyRequest, with: moc)
+            return true
+        } catch let error as NSError {
+            print("Error deleting data from DB: \(error)")
+            return false
         }
     }
     
