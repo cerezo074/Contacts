@@ -70,7 +70,7 @@ class ContactsViewModel: NSObject {
             self?.contactsFetchedResultsController = NSFetchedResultsController(
                 fetchRequest: request,
                 managedObjectContext: moc,
-                sectionNameKeyPath: "firstname",
+                sectionNameKeyPath: nil,
                 cacheName: nil)
             self?.contactsFetchedResultsController?.delegate = self
             
@@ -95,10 +95,10 @@ class ContactsViewModel: NSObject {
     }
     
     func contactSubtitleInfo(contact: Person) -> String {
-        guard let email = contact.email, let cellphone = contact.cellphone else {
-            return "telephone: \(contact.cellphone)"
+        guard let email = contact.email else {
+            return "Contact without email"
         }
-        return "Telephone: \(cellphone) - Email: \(email)"
+        return "Email: \(email)"
     }
     
     func titleInfo(contact: Person) -> String {

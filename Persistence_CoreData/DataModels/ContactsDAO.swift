@@ -18,16 +18,21 @@ enum ContactsDAOReadingErrors: Error {
     case invalidEntities
 }
 
-enum ContacsDAOCreatingErrors: Error {
+enum PersonCreatingErrors: Error {
     case emailInvalid
-    case contactExist
+    case personExist
     case companyBelongsDifferentMOC
+    case creationFailed
+}
+
+enum CompanyCreatingErrors: Error {
+    case companyExist
     case creationFailed
 }
 
 extension ContactsDAO {
     
-    func create(firstName: String,
+    func createPerson(firstName: String,
                 lastname: String,
                 email: String,
                 cellPhone: String?,
@@ -40,10 +45,10 @@ extension ContactsDAO {
         do {
             let usersFetched = try contactsManagedObjectContext.fetch(userExistRequest)
             if usersFetched.count > 0 {
-                throw ContacsDAOCreatingErrors.contactExist
+                throw PersonCreatingErrors.personExist
             }
             if company?.managedObjectContext != contactsManagedObjectContext {
-                throw ContacsDAOCreatingErrors.companyBelongsDifferentMOC
+                throw PersonCreatingErrors.companyBelongsDifferentMOC
             }
             guard let newContact = NSEntityDescription.insertNewObject(
                 forEntityName: "Person",
@@ -64,19 +69,23 @@ extension ContactsDAO {
                 try contactsManagedObjectContext.save()
             } catch {
                 print("Error creating the new Contact: \(error)")
-                throw ContacsDAOCreatingErrors.creationFailed
+                throw PersonCreatingErrors.creationFailed
             }
         }
+    }
+    
+    func createCompany() throws {
+    
     }
     
     func delete() {
     
     }
     
-    func readContacts(fetchRequest: NSFetchRequest<NSFetchRequestResult>) throws -> [Person] {
+    func read<T: NSManagedObject>(fetchRequest: NSFetchRequest<NSFetchRequestResult>) throws -> [T] {
         do {
             let contactsFetched = try contactsManagedObjectContext.fetch(fetchRequest)
-            guard let contactsArray = contactsFetched as? [Person] else {
+            guard let contactsArray = contactsFetched as? [T] else {
                 throw ContactsDAOReadingErrors.invalidEntities
             }
             return contactsArray

@@ -1,5 +1,5 @@
 //
-//  CreateContactViewController.swift
+//  CreatePersonViewController.swift
 //  Persistence_CoreData
 //
 //  Created by Eli Pacheco Hoyos on 12/19/16.
@@ -9,9 +9,9 @@
 import UIKit
 import CoreData
 
-class CreateContactViewController: UIViewController {
+class CreatePersonViewController: UIViewController {
 
-    var createContactViewModel: CreateContactViewModel!
+    var createContactViewModel: CreatePersonViewModel!
     
     override func viewDidLoad() {
         super.viewDidLoad()

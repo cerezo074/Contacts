@@ -56,10 +56,13 @@ class ContactsViewController: UIViewController {
             [weak self] userActionOnData in
             switch userActionOnData {
             case .delete(let indexPath):
+                self?.contactsTableView.deleteRows(at: [indexPath], with: .bottom)
                 break
             case .insert(let indexPath):
+                self?.contactsTableView.insertRows(at: [indexPath], with: .top)
                 break
             case .update(let indexPath):
+                self?.contactsTableView.reloadRows(at: [indexPath], with: .fade)
                 break
             case .Iddle:
                 break

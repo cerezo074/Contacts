@@ -65,10 +65,10 @@
             </objects>
             <point key="canvasLocation" x="1056.8" y="109.29535232383809"/>
         </scene>
-        <!--Create Contact View Controller-->
+        <!--Create Person View Controller-->
         <scene sceneID="ymM-pM-dBj">
             <objects>
-                <viewController id="Bfs-IE-jYo" customClass="CreateContactViewController" customModule="Persistence_CoreData" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="Bfs-IE-jYo" customClass="CreatePersonViewController" customModule="Persistence_CoreData" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="dep-jp-vVH"/>
                         <viewControllerLayoutGuide type="bottom" id="bKi-WG-Grm"/>

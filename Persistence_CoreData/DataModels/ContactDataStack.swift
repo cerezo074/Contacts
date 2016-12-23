@@ -42,6 +42,8 @@ class ContactDataStack: NSObject {
             let urls = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
             let docURL = urls[urls.endIndex - 1]
             let storeURL = docURL.appendingPathComponent(ContactPersistentStore.name)
+//            let options = [NSMigratePersistentStoresAutomaticallyOption: true,
+//                           NSInferMappingModelAutomaticallyOption: true]
             print("DataStrore path: \(storeURL)")
             
             do {
@@ -52,7 +54,7 @@ class ContactDataStack: NSObject {
                 
                 print("Persisten Store loaded on coordinator")
             } catch {
-                assertionFailure("Error migrating strore \(error)")
+                assertionFailure("Error migrating store \(error)")
             }
         }
     }

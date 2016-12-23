@@ -30,11 +30,11 @@ struct ContactsFlowCoordinator {
     }
     
     func prepareCreateContactView(sourceVC: UIViewController, destinationVC: UIViewController) {
-        guard let createContactVC = destinationVC as? CreateContactViewController else { return }
+        guard let createContactVC = destinationVC as? CreatePersonViewController else { return }
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
             let moc = appDelegate.contactsController.managedObjectContext else { return }
         
-        let createContactVM = CreateContactViewModel(contactsManagedObjectContext: moc)
+        let createContactVM = CreatePersonViewModel(contactsManagedObjectContext: moc)
         createContactVC.createContactViewModel = createContactVM
     }
     
