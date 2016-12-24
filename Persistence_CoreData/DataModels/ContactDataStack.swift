@@ -9,6 +9,8 @@
 import UIKit
 import CoreData
 
+let PersistentStoreWasLoadedNotification = NSNotification.Name("PersistenStoreWasLoadedNotification")
+
 class ContactDataStack: NSObject {
     
     struct ContactManagedObjectModel {
@@ -17,15 +19,18 @@ class ContactDataStack: NSObject {
     }
     
     struct ContactPersistentStore {
-        static let name = "ContactModel.sqlite"
+        static let name = "ContactModel"
+        static let fileExtension = ".sqlite"
     }
     
     var managedObjectContext: NSManagedObjectContext?
     private(set) var persistenceStoreURL: URL?
     
     init(dataModel: String = ContactManagedObjectModel.name,
-                  persistenStore: String = ContactPersistentStore.name)
+         persistenStore: String = ContactPersistentStore.name
+        )
     {
+        
         guard let managedObjectModelPath = Bundle.main.url(forResource: dataModel,
                                                        withExtension: ContactManagedObjectModel.fileExtension) else {
                                                         assertionFailure("Error loading contact scheme path.")
@@ -43,7 +48,7 @@ class ContactDataStack: NSObject {
 
         let urls = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         let docURL = urls[urls.endIndex - 1]
-        let storeURL = docURL.appendingPathComponent(persistenStore)
+        let storeURL = docURL.appendingPathComponent(persistenStore + ContactPersistentStore.fileExtension)
         print("DataStore path: \(storeURL)")
         
         DispatchQueue.global().async {
@@ -55,7 +60,8 @@ class ContactDataStack: NSObject {
                                                                   configurationName: nil,
                                                                   at: storeURL,
                                                                   options: nil)
-                
+                NotificationCenter.default.post(name: PersistentStoreWasLoadedNotification,
+                                                object: nil)
                 print("Persisten Store loaded on coordinator")
             } catch {
                 assertionFailure("Error migrating store \(error)")
@@ -63,23 +69,6 @@ class ContactDataStack: NSObject {
         }
         
         persistenceStoreURL = storeURL
-    }
-    
-    func emptyContactPersistenceStore() -> Bool {
-        guard let moc = managedObjectContext else { return false }
-        let personRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Person")
-        let deletePersonRequest = NSBatchDeleteRequest(fetchRequest: personRequest)
-        let companyRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Company")
-        let deleteCompanyRequest = NSBatchDeleteRequest(fetchRequest: companyRequest)
-        
-        do {
-            try managedObjectContext?.persistentStoreCoordinator?.execute(deletePersonRequest, with: moc)
-            try managedObjectContext?.persistentStoreCoordinator?.execute(deleteCompanyRequest, with: moc)
-            return true
-        } catch let error as NSError {
-            print("Error deleting data from DB: \(error)")
-            return false
-        }
     }
     
 }

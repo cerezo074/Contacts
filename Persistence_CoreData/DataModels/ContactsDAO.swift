@@ -34,6 +34,36 @@ enum ContactsCommonErros: Error {
 
 extension ContactsDAO {
     
+    func emptyContactPersistenceStore() -> Bool {
+        let companyRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Company")
+        
+        do {
+            guard let companies = try contactsManagedObjectContext.fetch(companyRequest) as? [Company] else {
+                return false
+            }
+            
+            for company in companies {
+                if let employee =  company.employee {
+                    for person in employee {
+                        if let person = person as? Person {
+                            company.removeFromEmployee(person)
+                            person.company = nil
+                            contactsManagedObjectContext.delete(person)
+                        }
+                    }
+                }
+                
+                contactsManagedObjectContext.delete(company)
+            }
+            
+            try contactsManagedObjectContext.save()
+            return true
+        } catch let error as NSError {
+            print("Error deleting data from DB: \(error)")
+            return false
+        }
+    }
+    
     func createPerson(firstName: String,
                       lastname: String,
                       email: String,
@@ -94,6 +124,7 @@ extension ContactsDAO {
                 throw ContactsCommonErros.invalidEntity
             }
             
+            newCompany.identifier = name
             newCompany.name = name
             newCompany.email = email
             newCompany.address = address
@@ -107,24 +138,28 @@ extension ContactsDAO {
         }
     }
     
-    func delete(validationRequest: NSFetchRequest<NSFetchRequestResult>) throws {
+    func delete(validationRequest: NSFetchRequest<NSFetchRequestResult>) throws -> Bool {
         if let result = try? contactsManagedObjectContext.fetch(validationRequest) {
             for object in result {
                 guard let objectToDelete = object as? NSManagedObject else {
                     throw ContactsCommonErros.invalidEntity
                 }
                 contactsManagedObjectContext.delete(objectToDelete)
+                try contactsManagedObjectContext.save()
+                return true
             }
         } else {
             print("Object to delete not exits on Data Store")
             throw ContactsCommonErros.objectNoExist
         }
+        
+        return false
     }
     
-    func read<T: NSManagedObject>(fetchRequest: NSFetchRequest<NSFetchRequestResult>) throws -> [T] {
+    func read(fetchRequest: NSFetchRequest<NSFetchRequestResult>) throws -> [NSManagedObject] {
         do {
             let contactsFetched = try contactsManagedObjectContext.fetch(fetchRequest)
-            guard let contactsArray = contactsFetched as? [T] else {
+            guard let contactsArray = contactsFetched as? [NSManagedObject] else {
                 throw ContactsCommonErros.invalidEntity
             }
             return contactsArray
