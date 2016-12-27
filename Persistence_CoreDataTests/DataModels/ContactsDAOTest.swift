@@ -26,6 +26,9 @@ class ContactsDAOTest: XCTestCase {
     
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
+        if self.contactsManager.emptyContactPersistenceStore() {
+            print("Data deleted!!")
+        }
         super.tearDown()
     }
     
@@ -55,6 +58,75 @@ class ContactsDAOTest: XCTestCase {
         
     }
     
+    func testDeleteAllCompanies() {
+        let persistenLoadExpectation = expectation(description: "DataBaseConection")
+        
+        DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + timeToLoadData) {
+            [weak self] in
+            
+            guard let `self` = self else {
+                return
+            }
+            
+            self.contactsManager = MyContactsManager(contactsManagedObjectContext: self.contactDataStack.managedObjectContext!)
+
+            if self.contactsManager.emptyContactPersistenceStore() {
+                print("Data deleted!!")
+            }
+            
+            //We create companies that are linked to persons
+            let _ = self.contactsManager.createDemoPersons()
+            try! self.contactsManager.contactsManagedObjectContext.save()
+            let result = self.contactsManager.deleteAllCompanies()
+            
+            XCTAssert(result, "Companies couldn't be deleted")
+            
+            persistenLoadExpectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: timeToLoadData + timeToPerformTask, handler: {
+            error in
+            if let error = error {
+                XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+            }
+        })
+    }
+    
+    func testDeleteAllPersons() {
+        let persistenLoadExpectation = expectation(description: "DataBaseConection")
+        
+        DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + timeToLoadData) {
+            [weak self] in
+            
+            guard let `self` = self else {
+                return
+            }
+            
+            self.contactsManager = MyContactsManager(contactsManagedObjectContext: self.contactDataStack.managedObjectContext!)
+            
+            if self.contactsManager.emptyContactPersistenceStore() {
+                print("Data deleted!!")
+            }
+            
+            let _ = self.contactsManager.createDemoPersons()
+            try! self.contactsManager.contactsManagedObjectContext.save()
+            let result = self.contactsManager.deleteAllPersons()
+            
+            XCTAssert(result, "Persons not deleted!")
+            
+            persistenLoadExpectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: timeToLoadData + timeToPerformTask, handler: {
+            error in
+            if let error = error {
+                XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+            }
+        })
+    }
+    
+    //MARK: CRUD operations on Company
+    
     func testDeleteCompany() {
     
         let persistenLoadExpectation = expectation(description: "DataBaseConection")
@@ -72,13 +144,11 @@ class ContactsDAOTest: XCTestCase {
                 print("Data deleted!!")
             }
             
-            let companyIdentifier = "Monkey's Lab"
-            let _ = try! self.contactsManager.createCompany(name: companyIdentifier,
-                                                            email: "medellin@monkeyslab.com",
-                                                            address: "Cra 85a # 34a - 22 apto 301",
-                                                            telephone: "0345810335")
-            let request = self.contactsManager.createRequestWith("Company", "identifier ==[cd] %@", [companyIdentifier])
-            let result = try! self.contactsManager.delete(validationRequest: request)
+            //We created companies and persons based on relationships
+            let company = self.contactsManager.demoUser().company!
+            try! self.contactsManager.contactsManagedObjectContext.save()
+            let deleteCompanyRequest = self.contactsManager.createRequestWith("Company", "identifier ==[cd] %@", [company.identifier!])
+            let result = try! self.contactsManager.delete(validationRequest: deleteCompanyRequest)
             XCTAssert(result, "Company not deleted!!!")
             
             persistenLoadExpectation.fulfill()
@@ -174,35 +244,256 @@ class ContactsDAOTest: XCTestCase {
 
     }
     
+    //MARK: CRUD Operations on Persons
+    
+    func testCreatePersonWithCompanyManually() {
+        let persistenLoadExpectation = expectation(description: "DataBaseConection")
+        
+        DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + timeToLoadData) {
+            [weak self] in
+            
+            guard let `self` = self else {
+                return
+            }
+            
+            self.contactsManager = MyContactsManager(contactsManagedObjectContext: self.contactDataStack.managedObjectContext!)
+            
+            if self.contactsManager.emptyContactPersistenceStore() {
+                print("Data deleted!!")
+            }
+            
+            let monekeysCompany = self.contactsManager.createMonkeysCompanyEntity()
+            let _ = try! self.contactsManager.createPerson(firstName: "Eli",
+                             lastname: "Pacheco Hoyos",
+                             email: "eph_074@hotmail.com",
+                             cellPhone: "3207134957",
+                             identifier: "eph_074@hotmail.com",
+                             job: "iOS Developer",
+                             company: monekeysCompany)
+            
+            let personCreated = self.contactsManager.personWith(MyContactsManager.userDefaultIdentifier)
+            XCTAssertNotNil(personCreated, "Person not created!!!")
+            
+            persistenLoadExpectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: timeToLoadData + timeToPerformTask, handler: {
+            error in
+            if let error = error {
+                XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+            }
+        })
+    }
+    
+    //Person created manually and the Company created from the persisten store cordinator by a reading operation
+    func testCreatePersonWithCompanyFromPersistentStore() {
+        let persistenLoadExpectation = expectation(description: "DataBaseConection")
+        
+        DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + timeToLoadData) {
+            [weak self] in
+            
+            guard let `self` = self else {
+                return
+            }
+            
+            self.contactsManager = MyContactsManager(contactsManagedObjectContext: self.contactDataStack.managedObjectContext!)
+            
+            if self.contactsManager.emptyContactPersistenceStore() {
+                print("Data deleted!!")
+            }
+            
+            let _ = self.contactsManager.createDemoPersons()
+            let monkeysCompanyRead = self.contactsManager.companyWith(MyContactsManager.monkeysCompanyIdentifier)
+            let _ = try! self.contactsManager.createPerson(firstName: "Eli",
+                                                           lastname: "Pacheco Hoyos",
+                                                           email: "eph_074@hotmail.com",
+                                                           cellPhone: "3207134957",
+                                                           identifier: "eph_074@hotmail.com",
+                                                           job: "iOS Developer",
+                                                           company: monkeysCompanyRead)
+            
+            let personCreated = self.contactsManager.personWith(MyContactsManager.userDefaultIdentifier)
+            XCTAssertNotNil(personCreated, "Person not created!!!")
+            
+            persistenLoadExpectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: timeToLoadData + timeToPerformTask, handler: {
+            error in
+            if let error = error {
+                XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+            }
+        })
+    }
+    
+    func testDeletePersonWithoutCompany() {
+        let persistenLoadExpectation = expectation(description: "DataBaseConection")
+        
+        DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + timeToLoadData) {
+            [weak self] in
+            
+            guard let `self` = self else {
+                return
+            }
+            
+            self.contactsManager = MyContactsManager(contactsManagedObjectContext: self.contactDataStack.managedObjectContext!)
+            
+            if self.contactsManager.emptyContactPersistenceStore() {
+                print("Data deleted!!")
+            }
+            
+            let personToDelete = self.contactsManager.demoUser()
+            try! self.contactsManager.contactsManagedObjectContext.save()
+            let personIdentifier = personToDelete.identifier!
+            let companyIdentifier = personToDelete.company!.identifier!
+            let deleteRequest = self.contactsManager.createRequestWith("Person", "identifier ==[cd] %@", [personIdentifier])
+            let _ = try! self.contactsManager.delete(validationRequest: deleteRequest)
+            let userDeleted = self.contactsManager.personWith(personIdentifier)
+            let companyAsociated = self.contactsManager.companyWith(companyIdentifier)
+            
+            XCTAssert(userDeleted == nil && companyAsociated != nil, "Person was deleted without the company!!!")
+            
+            persistenLoadExpectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: timeToLoadData + timeToPerformTask, handler: {
+            error in
+            if let error = error {
+                XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+            }
+        })
+        
+    }
+    
+    func testUpdatePerson() {
+        let persistenLoadExpectation = expectation(description: "DataBaseConection")
+        
+        DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + timeToLoadData) {
+            [weak self] in
+            
+            guard let `self` = self else {
+                return
+            }
+            
+            self.contactsManager = MyContactsManager(contactsManagedObjectContext: self.contactDataStack.managedObjectContext!)
+            
+            if self.contactsManager.emptyContactPersistenceStore() {
+                print("Data deleted!!")
+            }
+            
+            let person = self.contactsManager.demoUser()
+            try! self.contactsManager.contactsManagedObjectContext.save()
+            let lionsCompany = self.contactsManager.companyWith(MyContactsManager.lionsCompanyIdentifier)
+            person.company = lionsCompany
+            try! self.contactsManager.update(person)
+            
+            let personUpdated = self.contactsManager.personWith(person.identifier!)
+            XCTAssert(personUpdated!.company!.identifier == lionsCompany!.identifier, "Person wasn't updated!!!")
+            
+            persistenLoadExpectation.fulfill()
+        }
+        
+        waitForExpectations(timeout: timeToLoadData + timeToPerformTask, handler: {
+            error in
+            if let error = error {
+                XCTFail("waitForExpectationsWithTimeout errored: \(error)")
+            }
+        })
+    }
+    
 }
 
 struct MyContactsManager: ContactsDAO {
 
+    static let monkeysCompanyIdentifier = "Monkey's Lab"
+    static let lionsCompanyIdentifier = "Lion's Lab"
+    static let userDefaultIdentifier = "eph_074@hotmail.com"
     var contactsManagedObjectContext: NSManagedObjectContext
     
     init(contactsManagedObjectContext: NSManagedObjectContext) {
         self.contactsManagedObjectContext = contactsManagedObjectContext
     }
     
-    func companyWith(_ name: String) -> Company? {
-        let companyRequest = createRequestWith("Company", "identifier ==[cd] %@", [name])
+    func createMonkeysCompanyEntity() -> Company {
+        let monkeys = NSEntityDescription.insertNewObject(
+            forEntityName: "Company",
+            into: contactsManagedObjectContext) as! Company
         
-        do {
-            guard let companiesFetched = try read(fetchRequest: companyRequest) as? [Company] else {
-                return nil
-            }
-            return companiesFetched.first
-        } catch {
-            print("Error reading the company: \(error)")
-            return nil
-        }
+        monkeys.name = MyContactsManager.monkeysCompanyIdentifier
+        monkeys.email = "medellin@monkeyslab.com"
+        monkeys.address = "Cra 85a # 34a - 22 apto 301"
+        monkeys.telephone = "0345810335"
+        monkeys.identifier = MyContactsManager.monkeysCompanyIdentifier
+        
+        return monkeys
     }
     
-    func createRequestWith(_ entityName: String, _ predicateFormat: String, _ arguments: [Any]) -> NSFetchRequest<NSFetchRequestResult> {
-        let fetchedRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
-        fetchedRequest.predicate = NSPredicate(format: predicateFormat, argumentArray: arguments)
+    func createDemoCompanies() -> [Company] {
+    
+        let monkeys = createMonkeysCompanyEntity()
+        let lions = NSEntityDescription.insertNewObject(
+            forEntityName: "Company",
+            into: contactsManagedObjectContext) as! Company
         
-        return fetchedRequest
+        lions.name = MyContactsManager.lionsCompanyIdentifier
+        lions.email = "medellin@lionslab.com"
+        lions.address = "Cra 85a # 34a - 22 apto 302"
+        lions.telephone = "0345810336"
+        lions.identifier = MyContactsManager.lionsCompanyIdentifier
+        
+        return [monkeys, lions]
+    }
+    
+    func createDemoPersons() -> [Person] {
+    
+        let companies = createDemoCompanies()
+        let monkeys = companies[0]
+        let lions = companies[1]
+        
+        let jaime = NSEntityDescription.insertNewObject(
+            forEntityName: "Person",
+            into: contactsManagedObjectContext) as! Person
+        
+        jaime.firstname = "Jaime"
+        jaime.lastname = "Perez Cordoba"
+        jaime.email = "jaimito@abc.com"
+        jaime.cellphone = "3201234567"
+        jaime.identifier = "jaimito@abc.com"
+        jaime.job = "Net Developer"
+        jaime.company = monkeys
+        monkeys.addToEmployee(jaime)
+        
+        let juan = NSEntityDescription.insertNewObject(
+            forEntityName: "Person",
+            into: contactsManagedObjectContext) as! Person
+        
+        juan.firstname = "Juan"
+        juan.lastname = "Pacheco Ramirez"
+        juan.email = "juancho@abc.com"
+        juan.cellphone = "3201234569"
+        juan.identifier = "juancho@abc.com"
+        juan.job = "Android Developer"
+        juan.company = monkeys
+        monkeys.addToEmployee(juan)
+        
+        let pedro = NSEntityDescription.insertNewObject(
+            forEntityName: "Person",
+            into: contactsManagedObjectContext) as! Person
+        
+        pedro.firstname = "pedro"
+        pedro.lastname = "Picapiedra De la Roca"
+        pedro.email = "pedrito@abc.com"
+        pedro.cellphone = "3201234512"
+        pedro.identifier = "pedrito@abc.com"
+        pedro.job = "Java Developer"
+        pedro.company = lions
+        lions.addToEmployee(pedro)
+        
+        return [jaime, juan, pedro]
+    }
+    
+    func demoUser() -> Person {
+        return createDemoPersons().first!
     }
     
 }

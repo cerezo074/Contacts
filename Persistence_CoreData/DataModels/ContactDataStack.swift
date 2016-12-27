@@ -45,12 +45,11 @@ class ContactDataStack: NSObject {
         let persistentStoreCoordinator = NSPersistentStoreCoordinator(managedObjectModel: managedObjectModel)
         managedObjectContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
         managedObjectContext?.persistentStoreCoordinator = persistentStoreCoordinator
-
+    
         let urls = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         let docURL = urls[urls.endIndex - 1]
         let storeURL = docURL.appendingPathComponent(persistenStore + ContactPersistentStore.fileExtension)
         print("DataStore path: \(storeURL)")
-        
         DispatchQueue.global().async {
             //Use this option for migrations
 //            let options = [NSMigratePersistentStoresAutomaticallyOption: true,

@@ -34,34 +34,84 @@ enum ContactsCommonErros: Error {
 
 extension ContactsDAO {
     
-    func emptyContactPersistenceStore() -> Bool {
-        let companyRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Company")
-        
+    func allPersons() -> [Person]? {
+        let allPersonsRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Person")
         do {
-            guard let companies = try contactsManagedObjectContext.fetch(companyRequest) as? [Company] else {
+            return try read(fetchRequest: allPersonsRequest) as? [Person]
+        } catch {
+            print("Error fetching all Persons: \(error)")
+            return nil
+        }
+    }
+    
+    func allCompanies() -> [Company]? {
+        let allPersonsRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Company")
+        do {
+            return try read(fetchRequest: allPersonsRequest) as? [Company]
+        } catch {
+            print("Error fetching all Companies: \(error)")
+            return nil
+        }
+    }
+    
+    func deleteAllPersons() -> Bool {
+        let personsRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Person")
+        do {
+            guard let persons = try contactsManagedObjectContext.fetch(personsRequest) as? [Person] else {
+                return false
+            }
+            
+            for person in persons {
+                if let company = person.company {
+                    company.removeFromEmployee(person)
+                    person.company = nil
+                }
+                contactsManagedObjectContext.delete(person)
+                try contactsManagedObjectContext.save()
+            }
+            
+            let readPersonsAgainRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Person")
+            let personsAfterDeleted = try read(fetchRequest: readPersonsAgainRequest)
+            return personsAfterDeleted.count == 0
+        } catch {
+            print("Error deleting all Persons: \(error)")
+            return false
+        }
+    }
+    
+    func deleteAllCompanies() -> Bool {
+        let companiesRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Company")
+        do {
+            guard let companies = try contactsManagedObjectContext.fetch(companiesRequest) as? [Company] else {
                 return false
             }
             
             for company in companies {
-                if let employee =  company.employee {
-                    for person in employee {
-                        if let person = person as? Person {
-                            company.removeFromEmployee(person)
-                            person.company = nil
-                            contactsManagedObjectContext.delete(person)
+                if let employees = company.employee {
+                    for employee in employees {
+                        if let employee = employee as? Person {
+                            company.removeFromEmployee(employee)
+                            employee.company = nil
+                            try contactsManagedObjectContext.save()
                         }
                     }
                 }
                 
                 contactsManagedObjectContext.delete(company)
+                try contactsManagedObjectContext.save()
             }
             
-            try contactsManagedObjectContext.save()
-            return true
-        } catch let error as NSError {
-            print("Error deleting data from DB: \(error)")
+            let companiesReadAgainRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Company")
+            let companiesAfterDeleted = try read(fetchRequest: companiesReadAgainRequest)
+            return companiesAfterDeleted.count == 0
+        } catch {
+            print("Error deleting all Persons: \(error)")
             return false
         }
+    }
+    
+    func emptyContactPersistenceStore() -> Bool {
+        return deleteAllPersons() && deleteAllCompanies()
     }
     
     func createPerson(firstName: String,
@@ -79,7 +129,7 @@ extension ContactsDAO {
             if usersFetched.count > 0 {
                 throw PersonCreatingErrors.personExist
             }
-            if company?.managedObjectContext != contactsManagedObjectContext {
+            if let companyToSave = company, companyToSave.managedObjectContext != contactsManagedObjectContext {
                 throw ContactsCommonErros.objectBelongsDifferentMOC
             }
             guard let newContact = NSEntityDescription.insertNewObject(
@@ -144,9 +194,21 @@ extension ContactsDAO {
                 guard let objectToDelete = object as? NSManagedObject else {
                     throw ContactsCommonErros.invalidEntity
                 }
-                contactsManagedObjectContext.delete(objectToDelete)
-                try contactsManagedObjectContext.save()
-                return true
+                
+                //Person entity(Weak entity) has a relationship with the Company entity(Strong entity)
+                if objectToDelete is Person, let person = object as? Person {
+                    let company = person.company
+                    company?.removeFromEmployee(person)
+                    person.company = nil
+                    contactsManagedObjectContext.delete(person)
+                    try contactsManagedObjectContext.save()
+                    return true
+                } else {
+                    //Objects without restrictions
+                    contactsManagedObjectContext.delete(objectToDelete)
+                    try contactsManagedObjectContext.save()
+                    return true
+                }
             }
         } else {
             print("Object to delete not exits on Data Store")
@@ -182,6 +244,41 @@ extension ContactsDAO {
         do {
             try contactsManagedObjectContext.save()
         }
+    }
+    
+    func companyWith(_ name: String) -> Company? {
+        let companyRequest = createRequestWith("Company", "identifier ==[cd] %@", [name])
+        
+        do {
+            guard let companiesFetched = try read(fetchRequest: companyRequest) as? [Company] else {
+                return nil
+            }
+            return companiesFetched.first
+        } catch {
+            print("Error reading the company: \(error)")
+            return nil
+        }
+    }
+    
+    func personWith(_ identifier: String) -> Person? {
+        let personRequest = createRequestWith("Person", "identifier ==[cd] %@", [identifier])
+        
+        do {
+            guard let personsFetched = try read(fetchRequest: personRequest) as? [Person] else {
+                return nil
+            }
+            return personsFetched.first
+        } catch {
+            print("Error reading the person: \(error)")
+            return nil
+        }
+    }
+    
+    func createRequestWith(_ entityName: String, _ predicateFormat: String, _ arguments: [Any]) -> NSFetchRequest<NSFetchRequestResult> {
+        let fetchedRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
+        fetchedRequest.predicate = NSPredicate(format: predicateFormat, argumentArray: arguments)
+        
+        return fetchedRequest
     }
     
 }
