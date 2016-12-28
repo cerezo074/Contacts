@@ -15,7 +15,7 @@ struct ContactsFlowCoordinator {
         case CreateContact = "CreateContact"
         case UpdateContact = "UpdateContact"
     }
-    
+        
     func prepareforSegue(segue: UIStoryboardSegue) {
         guard let identifier = segue.identifier, let segueIdentifier = SegueIdentifiers(rawValue: identifier) else { return }
 

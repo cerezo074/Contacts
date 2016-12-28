@@ -78,6 +78,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		454D2C1B1E1355260089F353 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = ViewModels;
+			sourceTree = "<group>";
+		};
 		E611809B1E044BD50005858E = {
 			isa = PBXGroup;
 			children = (
@@ -170,6 +177,7 @@
 		E62975321E0DA616006DD8F5 /* Persistence_CoreDataTests */ = {
 			isa = PBXGroup;
 			children = (
+				454D2C1B1E1355260089F353 /* ViewModels */,
 				E629753D1E0DA743006DD8F5 /* DataModels */,
 				E62975351E0DA616006DD8F5 /* Info.plist */,
 			);
@@ -235,6 +243,7 @@
 					E61180A31E044BD50005858E = {
 						CreatedOnToolsVersion = 8.1;
 						DevelopmentTeam = RM569R92QA;
+						LastSwiftMigration = 0820;
 						ProvisioningStyle = Automatic;
 					};
 					E62975301E0DA616006DD8F5 = {
@@ -419,11 +428,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = RM569R92QA;
 				INFOPLIST_FILE = Persistence_CoreData/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "Example.Persistence-CoreData";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -432,6 +443,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = RM569R92QA;
 				INFOPLIST_FILE = Persistence_CoreData/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -498,6 +510,7 @@
 				E62975391E0DA616006DD8F5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 

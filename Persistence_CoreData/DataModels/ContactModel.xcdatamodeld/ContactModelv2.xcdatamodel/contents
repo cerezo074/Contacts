@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="11542" systemVersion="15G1108" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="11759" systemVersion="16C68" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Company" representedClassName="Company" syncable="YES" codeGenerationType="class">
-        <attribute name="address" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="address" attributeType="String" minValueString="10" syncable="YES"/>
+        <attribute name="email" optional="YES" attributeType="String" regularExpressionString="[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}" syncable="YES"/>
         <attribute name="gps" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="identifier" attributeType="String" syncable="YES"/>
         <attribute name="logo" optional="YES" attributeType="Binary" syncable="YES"/>
-        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="name" attributeType="String" minValueString="3" syncable="YES"/>
         <attribute name="note" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="socialFacebook" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="socialWhatsapp" optional="YES" attributeType="String" syncable="YES"/>
@@ -14,12 +14,12 @@
         <relationship name="employee" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Person" inverseName="company" inverseEntity="Person" syncable="YES"/>
     </entity>
     <entity name="Person" representedClassName="Person" syncable="YES" codeGenerationType="class">
-        <attribute name="cellphone" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="firstname" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="job" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="lastname" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="cellphone" attributeType="String" minValueString="10" maxValueString="13" syncable="YES"/>
+        <attribute name="email" attributeType="String" regularExpressionString="[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}" syncable="YES"/>
+        <attribute name="firstname" attributeType="String" minValueString="3" syncable="YES"/>
+        <attribute name="identifier" attributeType="String" syncable="YES"/>
+        <attribute name="job" attributeType="String" syncable="YES"/>
+        <attribute name="lastname" attributeType="String" minValueString="5" syncable="YES"/>
         <relationship name="company" optional="YES" maxCount="1" deletionRule="Deny" destinationEntity="Company" inverseName="employee" inverseEntity="Company" syncable="YES"/>
     </entity>
     <elements>

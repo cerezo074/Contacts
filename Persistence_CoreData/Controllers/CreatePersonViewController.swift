@@ -11,6 +11,13 @@ import CoreData
 
 class CreatePersonViewController: UIViewController {
 
+    @IBOutlet weak var firstnameTextField: UITextField!
+    @IBOutlet weak var lastnameTextField: UITextField!
+    @IBOutlet weak var emailTextField: UITextField!
+    @IBOutlet weak var jobTextField: UITextField!
+    @IBOutlet weak var cellPhoneTextField: UITextField!
+    @IBOutlet weak var companyTextField: UITextField!
+    
     var createContactViewModel: CreatePersonViewModel!
     
     override func viewDidLoad() {

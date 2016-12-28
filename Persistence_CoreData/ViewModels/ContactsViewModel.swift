@@ -85,12 +85,11 @@ class ContactsViewModel: NSObject {
     }
     
     func contactAtIndex(_ index: IndexPath) -> Person? {
-        let contact = self.contactsFetchedResultsController?.object(at: index) as? Person
-        return contact
+        return contactsFetchedResultsController?.object(at: index) as? Person
     }
     
     func numbersOfContactsForSection(_ at: Int) -> Int {
-        guard let section = self.contactsFetchedResultsController?.sections?[at] else { return 0 }
+        guard let section = contactsFetchedResultsController?.sections?[at] else { return 0 }
         return section.numberOfObjects
     }
     

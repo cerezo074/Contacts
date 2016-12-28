@@ -10,7 +10,7 @@ import Foundation
 import CoreData
 
 protocol ContactsDAO {
-    var contactsManagedObjectContext: NSManagedObjectContext { get set }
+    var contactsManagedObjectContext: NSManagedObjectContext { get }
 }
 
 enum PersonCreatingErrors: Error {
@@ -117,7 +117,7 @@ extension ContactsDAO {
     func createPerson(firstName: String,
                       lastname: String,
                       email: String,
-                      cellPhone: String?,
+                      cellPhone: String,
                       identifier: String,
                       job: String,
                       company: Company?) throws -> Person?
@@ -147,9 +147,12 @@ extension ContactsDAO {
             newContact.company = company
             company?.addToEmployee(newContact)
             
+            try newContact.validateForInsert()
             try contactsManagedObjectContext.save()
             return newContact
         } catch {
+            
+            //multiples((error as NSError).userInfo as NSDictionary)["NSDetailedErrors"] is NSArray
             print("Error creating the new Contact: \(error)")
             throw PersonCreatingErrors.creationFailed
         }
@@ -180,6 +183,7 @@ extension ContactsDAO {
             newCompany.address = address
             newCompany.telephone = telephone
             
+            try newCompany.validateForInsert()
             try contactsManagedObjectContext.save()
             return newCompany
         } catch {

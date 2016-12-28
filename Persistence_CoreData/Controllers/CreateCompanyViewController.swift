@@ -10,6 +10,8 @@ import UIKit
 
 class CreateCompanyViewController: UIViewController {
 
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
