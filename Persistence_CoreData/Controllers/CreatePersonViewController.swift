@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-class CreatePersonViewController: UIViewController {
+class CreatePersonViewController: FormController {
 
     @IBOutlet weak var firstnameTextField: UITextField!
     @IBOutlet weak var lastnameTextField: UITextField!
@@ -17,28 +17,52 @@ class CreatePersonViewController: UIViewController {
     @IBOutlet weak var jobTextField: UITextField!
     @IBOutlet weak var cellPhoneTextField: UITextField!
     @IBOutlet weak var companyTextField: UITextField!
+    @IBOutlet weak var saveButton: UIButton!
     
     var createContactViewModel: CreatePersonViewModel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        let tapOnFormScrollSelector = #selector(CreatePersonViewController.formScrollViewWasTapped(gesture:))
+        let tapGestureOnFormScroll = UITapGestureRecognizer(target: self, action: tapOnFormScrollSelector)
+        formScrollView.addGestureRecognizer(tapGestureOnFormScroll)
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    override func inputViews() -> [UIView]? {
+        return [
+            firstnameTextField,
+            lastnameTextField,
+            emailTextField,
+            jobTextField,
+            cellPhoneTextField,
+            companyTextField
+        ]
     }
-    */
+    
+    //MARK: IBAction Methods
+    
+    @IBAction func saveButtonIsPressed(_ sender: Any) {
+        
+    }
+    
+    //MARK: Gesture Recognizers Methods
+    
+    func formScrollViewWasTapped(gesture: UITapGestureRecognizer) {
+        formScrollView.endEditing(true)
+    }
 
+}
+
+extension CreatePersonViewController: UITextFieldDelegate {
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
 }
