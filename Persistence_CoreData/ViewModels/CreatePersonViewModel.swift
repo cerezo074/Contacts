@@ -12,9 +12,8 @@ import CoreData
 enum CreatePersonAction {
     case edition
     case contactCreated(error: String?)
-    case createCompany
     case loadingCompanies
-    case companiesLoaded(errorMessage: String?)
+    case companiesLoaded(error: String?)
 }
 
 typealias CreatePersonActionListener = (_ state: CreatePersonAction) -> Void
@@ -29,18 +28,19 @@ class CreatePersonViewModel: NSObject, ContactsDAO {
         }
     }
     var companiesListener: CompanyListener?
-    var companySelected: IndexPath?
+    private var companySelected: IndexPath?
 
     private(set) var contactsManagedObjectContext: NSManagedObjectContext
-    private(set) var companiesFetchedResultsController: NSFetchedResultsController<NSFetchRequestResult>
+    private(set) var companiesFetchedResultsController: NSFetchedResultsController<NSFetchRequestResult>?
     var sections: Int {
-        return companiesFetchedResultsController.sections?.count ?? 0
+        return companiesFetchedResultsController?.sections?.count ?? 0
     }
     
     init(contactsManagedObjectContext: NSManagedObjectContext) {
-
         self.contactsManagedObjectContext = contactsManagedObjectContext
-
+    }
+    
+    func setUpCompanies() {
         let fetchAllCompaniesRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Company")
         fetchAllCompaniesRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
         
@@ -48,19 +48,17 @@ class CreatePersonViewModel: NSObject, ContactsDAO {
                                                                        managedObjectContext: contactsManagedObjectContext,
                                                                        sectionNameKeyPath: nil,
                                                                        cacheName: nil)
-        super.init()
-        companiesFetchedResultsController.delegate = self
+        companiesFetchedResultsController?.delegate = self
         cratePersonActionState = .loadingCompanies
         
         do {
-            try companiesFetchedResultsController.performFetch()
-            cratePersonActionState = .companiesLoaded(errorMessage: nil)
+            try companiesFetchedResultsController?.performFetch()
+            cratePersonActionState = .companiesLoaded(error: nil)
         } catch {
             print("Error loading the companies: \(error)")
-            cratePersonActionState = .companiesLoaded(errorMessage: "The companies couldn't be loaded, please try again")
+            cratePersonActionState = .companiesLoaded(error: "The companies couldn't be loaded, please try again")
         }
     }
-    
     
     func createNewContact(firstname: String, lastname: String, email: String, cellPhone: String, job: String) {
         
@@ -77,9 +75,17 @@ class CreatePersonViewModel: NSObject, ContactsDAO {
                                       job: job,
                                       company: company)
             cratePersonActionState = .contactCreated(error: nil)
+        } catch PersonCreatingErrors.personExist {
+            cratePersonActionState = .contactCreated(error: "User exits!")
         } catch {
             print("There is an error creating the new company: \(error)")
             cratePersonActionState = .contactCreated(error: "Somethig was wrong, please check the fields contain valid data")
+        }
+    }
+    
+    func selectCompany(_ at: IndexPath) {
+        if at.row > 0 {
+            companySelected = at
         }
     }
     
@@ -87,8 +93,19 @@ class CreatePersonViewModel: NSObject, ContactsDAO {
 
 extension CreatePersonViewModel: NSFetchedResultsControllerDelegate {
     
+    //Check the increment for the indexpath based by the indepent company, the row if offset by 1
+    
     func companyAt(_ index: IndexPath) -> Company? {
-        return companiesFetchedResultsController.object(at: index) as? Company
+        if index.row == 0 {
+            return nil
+        }
+        
+        let normalIndex = IndexPath(row: index.row - 1, section: index.section)
+        return companiesFetchedResultsController?.object(at: normalIndex) as? Company
+    }
+    
+    func numberOfItems(_ section: Int) -> Int {
+        return (companiesFetchedResultsController?.sections?[section].numberOfObjects ?? 0) + 1
     }
     
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {

@@ -25,7 +25,7 @@ enum UserActionOnData {
 typealias ContactsDataStateListener = (_ state: DataState) -> ()
 typealias ContactsUserActionOnDataListener = (_ userAction: UserActionOnData) -> ()
 
-class ContactsViewModel: NSObject {
+class ContactsViewModel: NSObject, ContactsDAO {
     
     var dataListener: ContactsDataStateListener?
     private var dataState: DataState = .Iddle {
@@ -45,42 +45,35 @@ class ContactsViewModel: NSObject {
         }
     }
     
+    private(set) var contactsManagedObjectContext: NSManagedObjectContext
     private(set) var contactsFetchedResultsController: NSFetchedResultsController<NSFetchRequestResult>?
     var sections: Int {
         return contactsFetchedResultsController?.sections?.count ?? 0
     }
     
-    init(contactsController: ContactDataStack) {
-        super.init()
+    init(contactsManagedObjectContext: NSManagedObjectContext) {
+        self.contactsManagedObjectContext = contactsManagedObjectContext
+    }
+    
+    func setUpContacts() {
+        self.dataState = .Fetching
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Person")
+        let firstnameSortDescriptor = NSSortDescriptor(key: "firstname", ascending: true)
+        let lastnameSortDescriptor = NSSortDescriptor(key: "lastname", ascending: true)
+        request.sortDescriptors = [firstnameSortDescriptor, lastnameSortDescriptor]
+        self.contactsFetchedResultsController = NSFetchedResultsController(
+            fetchRequest: request,
+            managedObjectContext: contactsManagedObjectContext,
+            sectionNameKeyPath: nil,
+            cacheName: nil)
+        self.contactsFetchedResultsController?.delegate = self
         
-        DispatchQueue.global().async { [weak self, weak contactsController] in
-            let errorMessage = "Data can't be loaded."
-            self?.dataState = .Fetching
-            
-            guard let moc = contactsController?.managedObjectContext else {
-                print("Error creating fetched result controller, there isn't context!!!.")
-                self?.dataState = .Loaded(error: errorMessage)
-                return
-            }
-            
-            let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Person")
-            let firstnameSortDescriptor = NSSortDescriptor(key: "firstname", ascending: true)
-            let lastnameSortDescriptor = NSSortDescriptor(key: "lastname", ascending: true)
-            request.sortDescriptors = [firstnameSortDescriptor, lastnameSortDescriptor]
-            self?.contactsFetchedResultsController = NSFetchedResultsController(
-                fetchRequest: request,
-                managedObjectContext: moc,
-                sectionNameKeyPath: nil,
-                cacheName: nil)
-            self?.contactsFetchedResultsController?.delegate = self
-            
-            do {
-                try self?.contactsFetchedResultsController?.performFetch()
-                self?.dataState = .Loaded(error: nil)
-            } catch {
-                print("Error fetcing results on fetched results controller.")
-                self?.dataState = .Loaded(error: errorMessage)
-            }
+        do {
+            try self.contactsFetchedResultsController?.performFetch()
+            self.dataState = .Loaded(error: nil)
+        } catch {
+            print("Error fetcing results on fetched results controller.")
+            self.dataState = .Loaded(error: "Contacts can't be loaded, please contact support")
         }
     }
     
@@ -89,8 +82,7 @@ class ContactsViewModel: NSObject {
     }
     
     func numbersOfContactsForSection(_ at: Int) -> Int {
-        guard let section = contactsFetchedResultsController?.sections?[at] else { return 0 }
-        return section.numberOfObjects
+        return contactsFetchedResultsController?.sections?[at].numberOfObjects ?? 0
     }
     
     func contactSubtitleInfo(contact: Person) -> String {
@@ -109,7 +101,18 @@ class ContactsViewModel: NSObject {
     }
     
     func deleteContact(_ at: IndexPath) {
-        
+        guard let person = contactsFetchedResultsController?.object(at: at) as? Person,
+            let personIdentifier = person.identifier else {
+            return
+        }
+        do {
+            let deletePersonRequest = createRequestWith("Person",
+                                                        "identifier ==[cd] %@",
+                                                        [personIdentifier])
+            let _ = try delete(validationRequest: deletePersonRequest)
+        } catch {
+            print("Error deleting the object \(person)\nError: \(error)")
+        }
     }
     
 }

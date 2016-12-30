@@ -265,8 +265,8 @@ class ContactsDAOTest: XCTestCase {
             let monekeysCompany = self.contactsManager.createMonkeysCompanyEntity()
             let _ = try! self.contactsManager.createPerson(firstName: "Eli",
                              lastname: "Pacheco Hoyos",
-                             email: "eph_074@@hotmail.com",
-                             cellPhone: "1",
+                             email: "eph_074@hotmail.com",
+                             cellPhone: "3207134723",
                              identifier: "eph_074@hotmail.com",
                              job: "iOS Developer",
                              company: monekeysCompany)

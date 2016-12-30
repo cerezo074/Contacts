@@ -21,11 +21,15 @@ class ContactsViewController: UIViewController {
         
         //This initialization are inyected from other controller when prepare segue is called "NORMALLY"
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-        contactsViewModel = ContactsViewModel(contactsController: appDelegate.contactsController)
+        
+        if let moc =  appDelegate.contactsController.managedObjectContext {
+            contactsViewModel = ContactsViewModel(contactsManagedObjectContext: moc)
+        }
         contactsFlowCoordinator = ContactsFlowCoordinator()
         
         bindDataState()
         bindUserActionsOnDataState()
+        contactsViewModel.setUpContacts()
         showMessageLabel(message: nil)
     }
 
@@ -116,5 +120,18 @@ extension ContactsViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        
+        let deleteRowAction = UITableViewRowAction(style: .default, title: "Delete") { [weak self] (action, index) in
+            self?.contactsViewModel.deleteContact(index)
+        }
+        
+        return [deleteRowAction]
     }
 }

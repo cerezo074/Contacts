@@ -32,6 +32,8 @@ enum ContactsCommonErros: Error {
     case objectBelongsDifferentMOC
 }
 
+let indepentCompanyName = "Indepent"
+
 extension ContactsDAO {
     
     func allPersons() -> [Person]? {
@@ -124,38 +126,31 @@ extension ContactsDAO {
     {
         let userExistRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Person")
         userExistRequest.predicate = NSPredicate(format: "identifier ==[cd] %@", identifier)
-        do {
-            let usersFetched = try contactsManagedObjectContext.fetch(userExistRequest)
-            if usersFetched.count > 0 {
-                throw PersonCreatingErrors.personExist
-            }
-            if let companyToSave = company, companyToSave.managedObjectContext != contactsManagedObjectContext {
-                throw ContactsCommonErros.objectBelongsDifferentMOC
-            }
-            guard let newContact = NSEntityDescription.insertNewObject(
-                forEntityName: "Person",
-                into: contactsManagedObjectContext) as? Person else {
-                    throw ContactsCommonErros.invalidEntity
-            }
-            
-            newContact.firstname = firstName
-            newContact.lastname = lastname
-            newContact.email = email
-            newContact.cellphone = cellPhone
-            newContact.identifier = identifier
-            newContact.job = job
-            newContact.company = company
-            company?.addToEmployee(newContact)
-            
-            try newContact.validateForInsert()
-            try contactsManagedObjectContext.save()
-            return newContact
-        } catch {
-            
-            //multiples((error as NSError).userInfo as NSDictionary)["NSDetailedErrors"] is NSArray
-            print("Error creating the new Contact: \(error)")
-            throw PersonCreatingErrors.creationFailed
+        let usersFetched = try contactsManagedObjectContext.fetch(userExistRequest)
+        if usersFetched.count > 0 {
+            throw PersonCreatingErrors.personExist
         }
+        if let companyToSave = company, companyToSave.managedObjectContext != contactsManagedObjectContext {
+            throw ContactsCommonErros.objectBelongsDifferentMOC
+        }
+        guard let newContact = NSEntityDescription.insertNewObject(
+            forEntityName: "Person",
+            into: contactsManagedObjectContext) as? Person else {
+                throw ContactsCommonErros.invalidEntity
+        }
+        
+        newContact.firstname = firstName
+        newContact.lastname = lastname
+        newContact.email = email
+        newContact.cellphone = cellPhone
+        newContact.identifier = identifier
+        newContact.job = job
+        newContact.company = company
+        company?.addToEmployee(newContact)
+        
+        try newContact.validateForInsert()
+        try contactsManagedObjectContext.save()
+        return newContact
     }
     
     func createCompany(name: String,
@@ -165,31 +160,25 @@ extension ContactsDAO {
     {
         let companyExistRequestValidator = NSFetchRequest<NSFetchRequestResult>(entityName: "Company")
         companyExistRequestValidator.predicate = NSPredicate(format: "identifier ==[cd] %@", name)
-        
-        do {
-            let companyFetched = try contactsManagedObjectContext.fetch(companyExistRequestValidator)
-            if companyFetched.count > 0 {
-                throw CompanyCreatingErrors.companyExist
-            }
-            guard let newCompany = NSEntityDescription.insertNewObject(
-                forEntityName: "Company",
-                into: contactsManagedObjectContext) as? Company else {
-                throw ContactsCommonErros.invalidEntity
-            }
-            
-            newCompany.identifier = name
-            newCompany.name = name
-            newCompany.email = email
-            newCompany.address = address
-            newCompany.telephone = telephone
-            
-            try newCompany.validateForInsert()
-            try contactsManagedObjectContext.save()
-            return newCompany
-        } catch {
-            print("Error creating the new Company: \(error)")
-            throw CompanyCreatingErrors.creationFailed
+        let companyFetched = try contactsManagedObjectContext.fetch(companyExistRequestValidator)
+        if companyFetched.count > 0 {
+            throw CompanyCreatingErrors.companyExist
         }
+        guard let newCompany = NSEntityDescription.insertNewObject(
+            forEntityName: "Company",
+            into: contactsManagedObjectContext) as? Company else {
+                throw ContactsCommonErros.invalidEntity
+        }
+        
+        newCompany.identifier = name
+        newCompany.name = name
+        newCompany.email = email
+        newCompany.address = address
+        newCompany.telephone = telephone
+        
+        try newCompany.validateForInsert()
+        try contactsManagedObjectContext.save()
+        return newCompany
     }
     
     func delete(validationRequest: NSFetchRequest<NSFetchRequestResult>) throws -> Bool {
@@ -223,16 +212,11 @@ extension ContactsDAO {
     }
     
     func read(fetchRequest: NSFetchRequest<NSFetchRequestResult>) throws -> [NSManagedObject] {
-        do {
-            let contactsFetched = try contactsManagedObjectContext.fetch(fetchRequest)
-            guard let contactsArray = contactsFetched as? [NSManagedObject] else {
-                throw ContactsCommonErros.invalidEntity
-            }
-            return contactsArray
-        } catch {
-            print("Error reading Persons: \(error)")
-            throw ContactsCommonErros.unknowErrorOnOperation
+        let contactsFetched = try contactsManagedObjectContext.fetch(fetchRequest)
+        guard let contactsArray = contactsFetched as? [NSManagedObject] else {
+            throw ContactsCommonErros.invalidEntity
         }
+        return contactsArray
     }
     
     func update(_ object: NSManagedObject) throws {
@@ -245,9 +229,7 @@ extension ContactsDAO {
          so you can create the error on it and don't need to validate here, they are
          validated automatically by the coordinator.
          */
-        do {
-            try contactsManagedObjectContext.save()
-        }
+        try contactsManagedObjectContext.save()
     }
     
     func companyWith(_ name: String) -> Company? {

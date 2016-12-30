@@ -156,7 +156,7 @@
                                         </connections>
                                     </textField>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8k3-Cf-DLV">
-                                        <rect key="frame" x="144.5" y="464" width="86" height="40"/>
+                                        <rect key="frame" x="144.5" y="439" width="86" height="40"/>
                                         <color key="backgroundColor" red="1" green="0.59110337415117575" blue="0.36881473561599831" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="6YE-WZ-S0V"/>
@@ -204,7 +204,7 @@
                                     <constraint firstItem="N8M-g1-LFT" firstAttribute="leading" secondItem="G13-Rn-rC2" secondAttribute="leading" constant="8" id="FSw-Jq-wWg"/>
                                     <constraint firstItem="bZq-Oy-V9s" firstAttribute="leading" secondItem="G13-Rn-rC2" secondAttribute="leading" constant="8" id="FuT-yn-Ifs"/>
                                     <constraint firstAttribute="trailing" secondItem="1PY-ej-oS2" secondAttribute="trailing" constant="8" id="IzO-V5-azP"/>
-                                    <constraint firstItem="8k3-Cf-DLV" firstAttribute="top" secondItem="iVX-Zy-Nrw" secondAttribute="bottom" constant="50" id="LdF-z3-hDs"/>
+                                    <constraint firstItem="8k3-Cf-DLV" firstAttribute="top" secondItem="iVX-Zy-Nrw" secondAttribute="bottom" constant="25" id="LdF-z3-hDs"/>
                                     <constraint firstAttribute="trailing" secondItem="iVX-Zy-Nrw" secondAttribute="trailing" constant="8" id="Udm-6n-HNj"/>
                                     <constraint firstItem="iVX-Zy-Nrw" firstAttribute="leading" secondItem="G13-Rn-rC2" secondAttribute="leading" constant="8" id="UqL-Jx-Yi1"/>
                                     <constraint firstItem="2wO-xg-v98" firstAttribute="top" secondItem="6sn-9H-wAf" secondAttribute="bottom" constant="8" id="XRj-GV-rnC"/>
@@ -220,7 +220,7 @@
                                     <constraint firstItem="6sn-9H-wAf" firstAttribute="top" secondItem="1PY-ej-oS2" secondAttribute="bottom" constant="8" id="htj-ME-mYX"/>
                                     <constraint firstItem="R7x-L2-z3x" firstAttribute="top" secondItem="N8M-g1-LFT" secondAttribute="bottom" constant="8" id="lUA-Wv-Knq"/>
                                     <constraint firstItem="1PY-ej-oS2" firstAttribute="top" secondItem="JMQ-eF-KNJ" secondAttribute="bottom" constant="8" id="nOK-8L-dIO"/>
-                                    <constraint firstAttribute="bottom" secondItem="8k3-Cf-DLV" secondAttribute="bottom" constant="30" id="s8k-Pq-LQD"/>
+                                    <constraint firstAttribute="bottom" secondItem="8k3-Cf-DLV" secondAttribute="bottom" constant="25" id="s8k-Pq-LQD"/>
                                     <constraint firstAttribute="trailing" secondItem="JQJ-dy-sML" secondAttribute="trailing" constant="8" id="tdq-fO-gTI"/>
                                     <constraint firstItem="6sn-9H-wAf" firstAttribute="leading" secondItem="G13-Rn-rC2" secondAttribute="leading" constant="8" id="y4X-cZ-Jer"/>
                                     <constraint firstItem="8k3-Cf-DLV" firstAttribute="centerX" secondItem="G13-Rn-rC2" secondAttribute="centerX" id="yul-3e-yGA"/>
@@ -237,7 +237,13 @@
                             <constraint firstItem="G13-Rn-rC2" firstAttribute="top" secondItem="dep-jp-vVH" secondAttribute="bottom" id="sk1-4u-duC"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Create Contact" id="79E-mO-Vrt"/>
+                    <navigationItem key="navigationItem" title="Create Contact" id="79E-mO-Vrt">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="gNy-mX-h6c">
+                            <connections>
+                                <segue destination="R7u-X4-Cb6" kind="show" identifier="CreateCompany" id="XMY-XC-1zT"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="cellPhoneTextField" destination="2wO-xg-v98" id="9kv-kI-vOb"/>
                         <outlet property="companyTextField" destination="iVX-Zy-Nrw" id="XiS-qh-w79"/>
@@ -252,6 +258,25 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jX1-H2-eUO" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1056.8" y="808.24587706146929"/>
+        </scene>
+        <!--Create Company-->
+        <scene sceneID="ZPR-Xx-N9m">
+            <objects>
+                <viewController id="R7u-X4-Cb6" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="sME-hg-xYY"/>
+                        <viewControllerLayoutGuide type="bottom" id="G2w-1j-POY"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="aLi-dX-VLc">
+                        <rect key="frame" x="0.0" y="64" width="375" height="603"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Create Company" id="NnT-dg-7df"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="O5a-7d-Wzi" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1959" y="808"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="7q5-fa-lMD">
