@@ -16,9 +16,8 @@ class CreatePersonViewController: FormController {
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var jobTextField: UITextField!
     @IBOutlet weak var cellPhoneTextField: UITextField!
-    @IBOutlet weak var companyTextField: UITextField!
+    @IBOutlet weak var companyTextField: PickerTextField!
     @IBOutlet weak var saveButton: UIButton!
-    var companyPickerView: UIPickerView!
     
     var createContactViewModel: CreatePersonViewModel!
     
@@ -29,10 +28,9 @@ class CreatePersonViewController: FormController {
         let tapGestureOnFormScroll = UITapGestureRecognizer(target: self, action: tapOnFormScrollSelector)
         formScrollView.addGestureRecognizer(tapGestureOnFormScroll)
         
-        companyPickerView = UIPickerView()
-        companyPickerView.delegate = self
-        companyPickerView.dataSource = self
-        companyTextField.inputView = companyPickerView
+        companyTextField.pickerToolbarActionDelegate = self
+        companyTextField.pickerViewDataSource = self
+        companyTextField.pickerViewDelegate = self
         
         bindActionListener()
         bindCompanySelected()
@@ -88,7 +86,7 @@ class CreatePersonViewController: FormController {
         createContactViewModel.companiesListener = {
             [weak self] in
             if self?.companyTextField == self?.firstResponder() {
-                self?.companyPickerView.reloadAllComponents()
+                self?.companyTextField.reload()
             }
         }
     }
@@ -156,6 +154,29 @@ extension CreatePersonViewController: UIPickerViewDataSource, UIPickerViewDelega
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         createContactViewModel.selectCompany(IndexPath(row: row, section: component))
         companyTextField.text = self.pickerView(pickerView, titleForRow: row, forComponent: component)
+    }
+    
+}
+
+extension CreatePersonViewController: PicketTextFieldActionProtocol {
+
+    func doneTitle() -> String {
+        return "Done"
+    }
+    
+    func cancelTitle() -> String {
+        return "Cancel"
+    }
+    
+    func doneButtonPressed(button: UIBarButtonItem) {
+        companyTextField.resignFirstResponder()
+        if let rowSelected = companyTextField.pickerView?.selectedRow(inComponent: 0) {
+            createContactViewModel.selectCompany(IndexPath(row: rowSelected, section: 0))
+        }
+    }
+    
+    func cancelButtonPressed(cancel: UIBarButtonItem) {
+        companyTextField.resignFirstResponder()
     }
     
 }

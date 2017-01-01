@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4513D96D1E15A51300AACAD1 /* FormController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4513D96C1E15A51300AACAD1 /* FormController.swift */; };
+		45F773321E19789C003A2F13 /* PickerTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F773311E19789C003A2F13 /* PickerTextField.swift */; };
 		E61180A81E044BD50005858E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E61180A71E044BD50005858E /* AppDelegate.swift */; };
 		E61180AF1E044BD50005858E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E61180AE1E044BD50005858E /* Assets.xcassets */; };
 		E61180BF1E046A3B0005858E /* ContactModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E61180BD1E046A3B0005858E /* ContactModel.xcdatamodeld */; };
@@ -38,6 +39,7 @@
 
 /* Begin PBXFileReference section */
 		4513D96C1E15A51300AACAD1 /* FormController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FormController.swift; path = Classes/FormController.swift; sourceTree = "<group>"; };
+		45F773311E19789C003A2F13 /* PickerTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PickerTextField.swift; path = Classes/PickerTextField.swift; sourceTree = "<group>"; };
 		E61180A41E044BD50005858E /* Persistence_CoreData.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Persistence_CoreData.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E61180A71E044BD50005858E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E61180AE1E044BD50005858E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -84,6 +86,7 @@
 			isa = PBXGroup;
 			children = (
 				4513D96C1E15A51300AACAD1 /* FormController.swift */,
+				45F773311E19789C003A2F13 /* PickerTextField.swift */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -321,6 +324,7 @@
 				E625D1BE1E08705B00F4DBBF /* CreatePersonViewController.swift in Sources */,
 				E6CAC9321E0C97D30044A43E /* CreateCompanyViewModel.swift in Sources */,
 				E625D1C31E08848100F4DBBF /* ContactsFlowCoordinator.swift in Sources */,
+				45F773321E19789C003A2F13 /* PickerTextField.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
