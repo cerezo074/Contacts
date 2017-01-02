@@ -13,6 +13,12 @@ class FormController: UIViewController {
 
     @IBOutlet dynamic weak var formScrollView: UIScrollView!
     
+    override func viewDidLoad() {
+        let tapOnFormScrollSelector = #selector(FormController.formScrollViewWasTapped(gesture:))
+        let tapGestureOnFormScroll = UITapGestureRecognizer(target: self, action: tapOnFormScrollSelector)
+        formScrollView.addGestureRecognizer(tapGestureOnFormScroll)
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         registerKeyboardNotifications()
@@ -101,6 +107,12 @@ class FormController: UIViewController {
         let okAction = UIAlertAction(title: "Ok", style: .default, handler: nil)
         alertVC.addAction(okAction)
         present(alertVC, animated: true, completion: nil)
+    }
+    
+    //MARK: Gesture Recognizers Methods
+    
+    func formScrollViewWasTapped(gesture: UITapGestureRecognizer) {
+        formScrollView.endEditing(true)
     }
     
 }

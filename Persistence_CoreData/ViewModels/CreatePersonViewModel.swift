@@ -79,7 +79,7 @@ class CreatePersonViewModel: NSObject, ContactsDAO {
             cratePersonActionState = .contactCreated(error: "User exits!")
         } catch {
             print("There is an error creating the new company: \(error)")
-            cratePersonActionState = .contactCreated(error: "Somethig was wrong, please check the fields contain valid data")
+            cratePersonActionState = .contactCreated(error: "Somethig is wrong, please check the fields contain valid data")
         }
     }
     

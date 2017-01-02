@@ -12,23 +12,26 @@ import UIKit
 struct ContactsFlowCoordinator {
     
     enum SegueIdentifiers: String {
-        case CreateContact = "CreateContact"
-        case UpdateContact = "UpdateContact"
+        case createContact = "CreateContact"
+        case createCompany = "CreateCompany"
     }
         
     func prepareforSegue(segue: UIStoryboardSegue) {
-        guard let identifier = segue.identifier, let segueIdentifier = SegueIdentifiers(rawValue: identifier) else { return }
+        guard let identifier = segue.identifier, let segueIdentifier = SegueIdentifiers(rawValue: identifier) else {
+            return
+        }
 
         switch segueIdentifier {
-        case .CreateContact:
-            prepareCreateContactView(sourceVC: segue.source,
-                                     destinationVC: segue.destination)
+        case .createContact:
+            prepareCreateContactView(sourceVC: segue.source, destinationVC: segue.destination)
             break
-        case .UpdateContact:
+        case .createCompany:
+            prepareCreateCompanyView(sourceVC: segue.source, destinationVC: segue.destination)
             break
         }
     }
     
+    //MARK: Create Contact view methods
     func prepareCreateContactView(sourceVC: UIViewController, destinationVC: UIViewController) {
         guard let createContactVC = destinationVC as? CreatePersonViewController else { return }
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
@@ -36,6 +39,28 @@ struct ContactsFlowCoordinator {
         
         let createContactVM = CreatePersonViewModel(contactsManagedObjectContext: moc)
         createContactVC.createContactViewModel = createContactVM
+    }
+    
+    func contactWasCreated(_ from: CreatePersonViewController?) {
+        if let navVC = from?.navigationController {
+            navVC.popViewController(animated: true)
+        }
+    }
+    
+    //MARK: Create Company view Methods
+    func prepareCreateCompanyView(sourceVC: UIViewController, destinationVC: UIViewController) {
+        guard let createCompanyVC = destinationVC as? CreateCompanyViewController else { return }
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+            let moc = appDelegate.contactsController.managedObjectContext else { return }
+        
+        let createCompanyVM = CreateCompanyViewModel(contactsManagedObjectContext: moc)
+        createCompanyVC.createCompanyViewModel = createCompanyVM
+    }
+    
+    func companyWasCreated(_ from: CreateCompanyViewController?) {
+        if let navVC = from?.navigationController {
+            navVC.popViewController(animated: true)
+        }
     }
     
 }

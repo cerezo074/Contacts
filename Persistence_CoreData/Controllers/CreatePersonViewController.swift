@@ -24,9 +24,6 @@ class CreatePersonViewController: FormController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let tapOnFormScrollSelector = #selector(CreatePersonViewController.formScrollViewWasTapped(gesture:))
-        let tapGestureOnFormScroll = UITapGestureRecognizer(target: self, action: tapOnFormScrollSelector)
-        formScrollView.addGestureRecognizer(tapGestureOnFormScroll)
         companyTextField.setDelegates(delegate: self,
                                       datasource: self,
                                       toolbarDelegate: self)
@@ -52,15 +49,15 @@ class CreatePersonViewController: FormController {
     }
     
     func bindActionListener() {
+        
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        
         createContactViewModel.createPersonActionListener = {
-            [weak self] state in
+            [weak self, weak appDelegate] state in
             switch state {
             case .contactCreated(let error):
                 guard let message = error else {
-                    //Call coordinator handler
-                    if let navVC = self?.navigationController {
-                        navVC.popViewController(animated: true)
-                    }
+                    appDelegate?.contactsFlowCoordinator.contactWasCreated(self)
                     return
                 }
                 self?.showResultActionMessage("Create Contact", message)
@@ -90,7 +87,8 @@ class CreatePersonViewController: FormController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        //Call Coordinator
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        appDelegate.contactsFlowCoordinator.prepareforSegue(segue: segue)
     }
     
     //MARK: IBAction Methods
@@ -102,7 +100,8 @@ class CreatePersonViewController: FormController {
             let email = emailTextField.text,
             let cellPhone = cellPhoneTextField.text,
             let job = cellPhoneTextField.text else {
-                showResultActionMessage("Create Contact", "Please you must fill all fields, the only field allowed to be empty is Company for independent persons.")
+                showResultActionMessage("Create Contact", "Please you must fill all fields, the only field allowed to" +
+                    "be empty is Company for independent persons.")
                 return
         }
         
@@ -111,12 +110,6 @@ class CreatePersonViewController: FormController {
                                                 email: email,
                                                 cellPhone: cellPhone,
                                                 job: job)
-    }
-    
-    //MARK: Gesture Recognizers Methods
-    
-    func formScrollViewWasTapped(gesture: UITapGestureRecognizer) {
-        formScrollView.endEditing(true)
     }
 
 }

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="11759" systemVersion="16C68" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="11759" systemVersion="15G1004" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Company" representedClassName="Company" syncable="YES" codeGenerationType="class">
         <attribute name="address" attributeType="String" minValueString="10" syncable="YES"/>
-        <attribute name="email" optional="YES" attributeType="String" regularExpressionString="[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}" syncable="YES"/>
+        <attribute name="email" attributeType="String" regularExpressionString="[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}" syncable="YES"/>
         <attribute name="gps" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="identifier" attributeType="String" syncable="YES"/>
         <attribute name="logo" optional="YES" attributeType="Binary" syncable="YES"/>
-        <attribute name="name" attributeType="String" minValueString="3" syncable="YES"/>
+        <attribute name="name" attributeType="String" minValueString="2" syncable="YES"/>
         <attribute name="note" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="socialFacebook" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="socialWhatsapp" optional="YES" attributeType="String" syncable="YES"/>

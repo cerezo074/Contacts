@@ -156,7 +156,7 @@ extension ContactsDAO {
     func createCompany(name: String,
                        email: String,
                        address: String,
-                       telephone: String) throws -> Company?
+                       telephone: String?) throws -> Company?
     {
         let companyExistRequestValidator = NSFetchRequest<NSFetchRequestResult>(entityName: "Company")
         companyExistRequestValidator.predicate = NSPredicate(format: "identifier ==[cd] %@", name)

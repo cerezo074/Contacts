@@ -14,7 +14,6 @@ class ContactsViewController: UIViewController {
     @IBOutlet weak var messageLabel: UILabel!
     
     var contactsViewModel: ContactsViewModel!
-    var contactsFlowCoordinator: ContactsFlowCoordinator!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,7 +24,6 @@ class ContactsViewController: UIViewController {
         if let moc =  appDelegate.contactsController.managedObjectContext {
             contactsViewModel = ContactsViewModel(contactsManagedObjectContext: moc)
         }
-        contactsFlowCoordinator = ContactsFlowCoordinator()
         
         bindDataState()
         bindUserActionsOnDataState()
@@ -83,7 +81,8 @@ class ContactsViewController: UIViewController {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        contactsFlowCoordinator.prepareforSegue(segue: segue)
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        appDelegate.contactsFlowCoordinator.prepareforSegue(segue: segue)
     }
 
 }
@@ -127,7 +126,6 @@ extension ContactsViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        
         let deleteRowAction = UITableViewRowAction(style: .default, title: "Delete") { [weak self] (action, index) in
             self?.contactsViewModel.deleteContact(index)
         }
