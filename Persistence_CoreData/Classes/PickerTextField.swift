@@ -8,11 +8,12 @@
 
 import UIKit
 
-@objc protocol PicketTextFieldActionProtocol: class {
+@objc protocol PickerTextToolbarDelegate: class {
     func doneButtonPressed(button: UIBarButtonItem)
     func cancelButtonPressed(cancel: UIBarButtonItem)
     func doneTitle() -> String
     func cancelTitle() -> String
+    func tintColor() -> UIColor
 }
 
 class PickerTextField: UITextField {
@@ -20,29 +21,27 @@ class PickerTextField: UITextField {
     var pickerView: UIPickerView?
     weak var pickerViewDataSource: UIPickerViewDataSource?
     weak var pickerViewDelegate: UIPickerViewDelegate?
-    weak var pickerToolbarActionDelegate: PicketTextFieldActionProtocol?
+    weak var toolbarDelegate: PickerTextToolbarDelegate?
     
-    override func awakeFromNib() {
-        if let delegate = pickerViewDelegate,
-            let dataSource = pickerViewDataSource,
-            let toolbarDelegate = pickerToolbarActionDelegate {
-            pickerView = UIPickerView()
-            pickerView?.delegate = delegate
-            pickerView?.dataSource = dataSource
-            self.inputView = pickerView
-            self.inputAccessoryView = toolBarWith(toolbarDelegate)
-        }
+    func setDelegates(delegate pickerViewDelegate: UIPickerViewDelegate,
+                        datasource pickerViewDataSource: UIPickerViewDataSource,
+                        toolbarDelegate: PickerTextToolbarDelegate) {
+        pickerView = UIPickerView()
+        pickerView?.delegate = pickerViewDelegate
+        pickerView?.dataSource = pickerViewDataSource
+        self.inputView = pickerView
+        self.inputAccessoryView = toolBarWith(toolbarDelegate)
     }
 
-    private func toolBarWith(_ delegate: PicketTextFieldActionProtocol) -> UIToolbar {
+    private func toolBarWith(_ delegate: PickerTextToolbarDelegate) -> UIToolbar {
     
         let toolBar = UIToolbar()
         toolBar.barStyle = UIBarStyle.default
         toolBar.isTranslucent = true
-        toolBar.tintColor = UIColor(red: 76/255, green: 217/255, blue: 100/255, alpha: 1)
+        toolBar.tintColor = delegate.tintColor()
         toolBar.sizeToFit()
         
-        let doneSelector = #selector(PicketTextFieldActionProtocol.doneButtonPressed(button:))
+        let doneSelector = #selector(PickerTextToolbarDelegate.doneButtonPressed(button:))
         let doneButton = UIBarButtonItem(title: delegate.doneTitle(),
                                          style: UIBarButtonItemStyle.plain,
                                          target: delegate,
@@ -50,7 +49,7 @@ class PickerTextField: UITextField {
         let spaceButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace,
                                           target: nil,
                                           action: nil)
-        let cancelSelector = #selector(PicketTextFieldActionProtocol.cancelButtonPressed(cancel:))
+        let cancelSelector = #selector(PickerTextToolbarDelegate.cancelButtonPressed(cancel:))
         let cancelButton = UIBarButtonItem(title: delegate.cancelTitle(),
                                            style: UIBarButtonItemStyle.plain,
                                            target: delegate,

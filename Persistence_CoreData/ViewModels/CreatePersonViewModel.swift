@@ -62,9 +62,9 @@ class CreatePersonViewModel: NSObject, ContactsDAO {
     
     func createNewContact(firstname: String, lastname: String, email: String, cellPhone: String, job: String) {
         
-        var company: Company?
-        if let companySelectedIndex = companySelected, let companyToAssingEmployee = companyAt(companySelectedIndex) {
-            company = companyToAssingEmployee
+        var companyToAdd: Company?
+        if let companySelectedIndex = companySelected, let companyToAssingEmployee = company(at: companySelectedIndex){
+            companyToAdd = companyToAssingEmployee
         }
         do {
             let _  = try createPerson(firstName: firstname,
@@ -73,7 +73,7 @@ class CreatePersonViewModel: NSObject, ContactsDAO {
                                       cellPhone: cellPhone,
                                       identifier: email,
                                       job: job,
-                                      company: company)
+                                      company: companyToAdd)
             cratePersonActionState = .contactCreated(error: nil)
         } catch PersonCreatingErrors.personExist {
             cratePersonActionState = .contactCreated(error: "User exits!")
@@ -89,19 +89,27 @@ class CreatePersonViewModel: NSObject, ContactsDAO {
         }
     }
     
+    func deselectCompany() {
+        companySelected = nil
+    }
+    
 }
 
 extension CreatePersonViewModel: NSFetchedResultsControllerDelegate {
     
     //Check the increment for the indexpath based by the indepent company, the row if offset by 1
     
-    func companyAt(_ index: IndexPath) -> Company? {
+    func company(at index: IndexPath) -> Company? {
         if index.row == 0 {
             return nil
         }
         
         let normalIndex = IndexPath(row: index.row - 1, section: index.section)
         return companiesFetchedResultsController?.object(at: normalIndex) as? Company
+    }
+    
+    func companyName(at: IndexPath) -> String? {
+        return company(at: at)?.name
     }
     
     func numberOfItems(_ section: Int) -> Int {
