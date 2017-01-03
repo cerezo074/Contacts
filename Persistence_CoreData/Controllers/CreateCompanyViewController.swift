@@ -23,6 +23,10 @@ class CreateCompanyViewController: FormController {
 
         // Do any additional setup after loading the view.
         bindCreateActionState()
+        companyNameTextField.text = "Atletico Nacional"
+        companyAddressTextField.text = "Cra 80 # 34 - 12"
+        companyEmailTextField.text = "Verdolaga#verde.com"
+        companyTelephoneTextField.text = "1234567890"
     }
 
     override func didReceiveMemoryWarning() {

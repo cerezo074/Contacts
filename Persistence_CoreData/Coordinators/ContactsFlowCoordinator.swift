@@ -35,7 +35,7 @@ struct ContactsFlowCoordinator {
     func prepareCreateContactView(sourceVC: UIViewController, destinationVC: UIViewController) {
         guard let createContactVC = destinationVC as? CreatePersonViewController else { return }
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
-            let moc = appDelegate.contactsController.managedObjectContext else { return }
+            let moc = appDelegate.contactsController.saveContext() else { return }
         
         let createContactVM = CreatePersonViewModel(contactsManagedObjectContext: moc)
         createContactVC.createContactViewModel = createContactVM
@@ -49,10 +49,10 @@ struct ContactsFlowCoordinator {
     
     //MARK: Create Company view Methods
     func prepareCreateCompanyView(sourceVC: UIViewController, destinationVC: UIViewController) {
+        guard let createContactVC = sourceVC as? CreatePersonViewController else { return }
         guard let createCompanyVC = destinationVC as? CreateCompanyViewController else { return }
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
-            let moc = appDelegate.contactsController.managedObjectContext else { return }
         
+        let moc = createContactVC.createContactViewModel.contactsManagedObjectContext
         let createCompanyVM = CreateCompanyViewModel(contactsManagedObjectContext: moc)
         createCompanyVC.createCompanyViewModel = createCompanyVM
     }

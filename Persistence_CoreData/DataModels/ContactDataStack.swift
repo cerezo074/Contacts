@@ -23,7 +23,8 @@ class ContactDataStack: NSObject {
         static let fileExtension = ".sqlite"
     }
     
-    var managedObjectContext: NSManagedObjectContext?
+    var mainContext: NSManagedObjectContext?
+    var persistenceStoreCoordinator: NSPersistentStoreCoordinator?
     private(set) var persistenceStoreURL: URL?
     
     init(dataModel: String = ContactManagedObjectModel.name,
@@ -42,10 +43,11 @@ class ContactDataStack: NSObject {
             return
         }
         
-        let persistentStoreCoordinator = NSPersistentStoreCoordinator(managedObjectModel: managedObjectModel)
-        managedObjectContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
-        managedObjectContext?.persistentStoreCoordinator = persistentStoreCoordinator
-    
+        let storeCoordinator = NSPersistentStoreCoordinator(managedObjectModel: managedObjectModel)
+        mainContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
+        mainContext?.persistentStoreCoordinator = storeCoordinator
+        mainContext?.undoManager = nil
+        
         let urls = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         let docURL = urls[urls.endIndex - 1]
         let storeURL = docURL.appendingPathComponent(persistenStore + ContactPersistentStore.fileExtension)
@@ -55,7 +57,7 @@ class ContactDataStack: NSObject {
 //            let options = [NSMigratePersistentStoresAutomaticallyOption: true,
 //                           NSInferMappingModelAutomaticallyOption: true]
             do {
-                try persistentStoreCoordinator.addPersistentStore(ofType: NSSQLiteStoreType,
+                try storeCoordinator.addPersistentStore(ofType: NSSQLiteStoreType,
                                                                   configurationName: nil,
                                                                   at: storeURL,
                                                                   options: nil)
@@ -63,11 +65,24 @@ class ContactDataStack: NSObject {
                                                 object: nil)
                 print("Persisten Store loaded on coordinator")
             } catch {
-                assertionFailure("Error migrating store \(error)")
+                assertionFailure("Error adding persistence store \(error)")
             }
         }
         
         persistenceStoreURL = storeURL
+        self.persistenceStoreCoordinator = storeCoordinator
+    }
+    
+    func saveContext() -> NSManagedObjectContext? {
+        guard let storeCoordinator = persistenceStoreCoordinator else {
+            return nil
+        }
+        
+        let privateContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+        privateContext.persistentStoreCoordinator = storeCoordinator
+        privateContext.undoManager = nil
+        
+        return privateContext
     }
     
 }

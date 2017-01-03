@@ -38,6 +38,7 @@ struct CreateCompanyViewModel: ContactsDAO {
             createCompanyActionState = .companyCreated(error: "Company Exists!.")
         } catch {
             createCompanyActionState = .companyCreated(error: "Somethig is wrong, please check the fields contain valid data")
+            resetTemporallyInsertions()
         }
     }
     

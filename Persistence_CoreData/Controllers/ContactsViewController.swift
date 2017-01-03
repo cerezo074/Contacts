@@ -21,7 +21,7 @@ class ContactsViewController: UIViewController {
         //This initialization are inyected from other controller when prepare segue is called "NORMALLY"
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
         
-        if let moc =  appDelegate.contactsController.managedObjectContext {
+        if let moc =  appDelegate.contactsController.mainContext {
             contactsViewModel = ContactsViewModel(contactsManagedObjectContext: moc)
         }
         

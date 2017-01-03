@@ -36,24 +36,26 @@ let indepentCompanyName = "Indepent"
 
 extension ContactsDAO {
     
-    func allPersons() -> [Person]? {
-        let allPersonsRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Person")
-        do {
-            return try read(fetchRequest: allPersonsRequest) as? [Person]
-        } catch {
-            print("Error fetching all Persons: \(error)")
-            return nil
-        }
+    func resetTemporallyInsertions() {
+        contactsManagedObjectContext.reset()
     }
     
-    func allCompanies() -> [Company]? {
-        let allPersonsRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Company")
-        do {
-            return try read(fetchRequest: allPersonsRequest) as? [Company]
-        } catch {
-            print("Error fetching all Companies: \(error)")
-            return nil
+    func allPersons() throws -> [Person] {
+        let allPersonsRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Person")
+        guard let persons = try read(fetchRequest: allPersonsRequest) as? [Person] else {
+            throw ContactsCommonErros.invalidEntity
         }
+        
+        return persons
+    }
+    
+    func allCompanies() throws -> [Company]  {
+        let allCompaniesRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Company")
+        guard let companies = try read(fetchRequest: allCompaniesRequest) as? [Company] else {
+            throw ContactsCommonErros.invalidEntity
+        }
+        
+        return companies
     }
     
     func deleteAllPersons() -> Bool {

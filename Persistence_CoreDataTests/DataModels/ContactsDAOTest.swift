@@ -43,7 +43,7 @@ class ContactsDAOTest: XCTestCase {
                 return
             }
             
-            self.contactsManager = MyContactsManager(contactsManagedObjectContext: self.contactDataStack.managedObjectContext!)
+            self.contactsManager = MyContactsManager(contactsManagedObjectContext: self.contactDataStack.mainContext!)
             XCTAssert(self.contactsManager.emptyContactPersistenceStore(), "Persistence Store couldn't be cleaned")
             
             persistenLoadExpectation.fulfill()
@@ -68,7 +68,7 @@ class ContactsDAOTest: XCTestCase {
                 return
             }
             
-            self.contactsManager = MyContactsManager(contactsManagedObjectContext: self.contactDataStack.managedObjectContext!)
+            self.contactsManager = MyContactsManager(contactsManagedObjectContext: self.contactDataStack.mainContext!)
 
             if self.contactsManager.emptyContactPersistenceStore() {
                 print("Data deleted!!")
@@ -102,7 +102,7 @@ class ContactsDAOTest: XCTestCase {
                 return
             }
             
-            self.contactsManager = MyContactsManager(contactsManagedObjectContext: self.contactDataStack.managedObjectContext!)
+            self.contactsManager = MyContactsManager(contactsManagedObjectContext: self.contactDataStack.mainContext!)
             
             if self.contactsManager.emptyContactPersistenceStore() {
                 print("Data deleted!!")
@@ -138,7 +138,7 @@ class ContactsDAOTest: XCTestCase {
                 return
             }
             
-            self.contactsManager = MyContactsManager(contactsManagedObjectContext: self.contactDataStack.managedObjectContext!)
+            self.contactsManager = MyContactsManager(contactsManagedObjectContext: self.contactDataStack.mainContext!)
             
             if self.contactsManager.emptyContactPersistenceStore() {
                 print("Data deleted!!")
@@ -174,7 +174,7 @@ class ContactsDAOTest: XCTestCase {
                 return
             }
             
-            self.contactsManager = MyContactsManager(contactsManagedObjectContext: self.contactDataStack.managedObjectContext!)
+            self.contactsManager = MyContactsManager(contactsManagedObjectContext: self.contactDataStack.mainContext!)
             
             if self.contactsManager.emptyContactPersistenceStore() {
                 print("Data deleted!!")
@@ -217,7 +217,7 @@ class ContactsDAOTest: XCTestCase {
                 return
             }
             
-            self.contactsManager = MyContactsManager(contactsManagedObjectContext: self.contactDataStack.managedObjectContext!)
+            self.contactsManager = MyContactsManager(contactsManagedObjectContext: self.contactDataStack.mainContext!)
             
             if self.contactsManager.emptyContactPersistenceStore() {
                 print("Data deleted!!")
@@ -256,7 +256,7 @@ class ContactsDAOTest: XCTestCase {
                 return
             }
             
-            self.contactsManager = MyContactsManager(contactsManagedObjectContext: self.contactDataStack.managedObjectContext!)
+            self.contactsManager = MyContactsManager(contactsManagedObjectContext: self.contactDataStack.mainContext!)
             
             if self.contactsManager.emptyContactPersistenceStore() {
                 print("Data deleted!!")
@@ -296,7 +296,7 @@ class ContactsDAOTest: XCTestCase {
                 return
             }
             
-            self.contactsManager = MyContactsManager(contactsManagedObjectContext: self.contactDataStack.managedObjectContext!)
+            self.contactsManager = MyContactsManager(contactsManagedObjectContext: self.contactDataStack.mainContext!)
             
             if self.contactsManager.emptyContactPersistenceStore() {
                 print("Data deleted!!")
@@ -336,7 +336,7 @@ class ContactsDAOTest: XCTestCase {
                 return
             }
             
-            self.contactsManager = MyContactsManager(contactsManagedObjectContext: self.contactDataStack.managedObjectContext!)
+            self.contactsManager = MyContactsManager(contactsManagedObjectContext: self.contactDataStack.mainContext!)
             
             if self.contactsManager.emptyContactPersistenceStore() {
                 print("Data deleted!!")
@@ -375,7 +375,7 @@ class ContactsDAOTest: XCTestCase {
                 return
             }
             
-            self.contactsManager = MyContactsManager(contactsManagedObjectContext: self.contactDataStack.managedObjectContext!)
+            self.contactsManager = MyContactsManager(contactsManagedObjectContext: self.contactDataStack.mainContext!)
             
             if self.contactsManager.emptyContactPersistenceStore() {
                 print("Data deleted!!")

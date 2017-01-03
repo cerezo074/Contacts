@@ -37,7 +37,7 @@ class CreateCompanyViewModelTest: XCTestCase {
                 return
             }
             
-            self.viewModel = CreateCompanyViewModel(contactsManagedObjectContext: self.contactDataStack.managedObjectContext!)
+            self.viewModel = CreateCompanyViewModel(contactsManagedObjectContext: self.contactDataStack.mainContext!)
             
             if self.viewModel.emptyContactPersistenceStore() {
                 print("Data deleted!!")

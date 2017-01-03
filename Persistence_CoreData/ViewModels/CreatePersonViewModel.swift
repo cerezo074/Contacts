@@ -31,33 +31,34 @@ class CreatePersonViewModel: NSObject, ContactsDAO {
     private var companySelected: IndexPath?
 
     private(set) var contactsManagedObjectContext: NSManagedObjectContext
-    private(set) var companiesFetchedResultsController: NSFetchedResultsController<NSFetchRequestResult>?
-    var sections: Int {
-        return companiesFetchedResultsController?.sections?.count ?? 0
-    }
+    private(set) var companies: [Company]?
+    var sections = 1
     
     init(contactsManagedObjectContext: NSManagedObjectContext) {
         self.contactsManagedObjectContext = contactsManagedObjectContext
+        
+        super.init()
+        registerForNotification()
+        fetchCompanies()
     }
     
-    func setUpCompanies() {
-        let fetchAllCompaniesRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Company")
-        fetchAllCompaniesRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
-        
-        companiesFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchAllCompaniesRequest,
-                                                                       managedObjectContext: contactsManagedObjectContext,
-                                                                       sectionNameKeyPath: nil,
-                                                                       cacheName: nil)
-        companiesFetchedResultsController?.delegate = self
+    deinit {
+        unregisterForNotifications()
+    }
+    
+    func fetchCompanies() {
         cratePersonActionState = .loadingCompanies
-        
-        do {
-            try companiesFetchedResultsController?.performFetch()
-            cratePersonActionState = .companiesLoaded(error: nil)
-        } catch {
-            print("Error loading the companies: \(error)")
-            cratePersonActionState = .companiesLoaded(error: "The companies couldn't be loaded, please try again")
+
+        DispatchQueue.global().async { [weak self] in
+            guard let `self` = self else { return }
+            do {
+                self.companies = try self.allCompanies()
+                self.cratePersonActionState = .companiesLoaded(error: nil)
+            } catch {
+                self.cratePersonActionState = .companiesLoaded(error: error.localizedDescription)
+            }
         }
+        
     }
     
     func createNewContact(firstname: String, lastname: String, email: String, cellPhone: String, job: String) {
@@ -80,6 +81,7 @@ class CreatePersonViewModel: NSObject, ContactsDAO {
         } catch {
             print("There is an error creating the new company: \(error)")
             cratePersonActionState = .contactCreated(error: "Somethig is wrong, please check the fields contain valid data")
+            resetTemporallyInsertions()
         }
     }
     
@@ -93,19 +95,14 @@ class CreatePersonViewModel: NSObject, ContactsDAO {
         companySelected = nil
     }
     
-}
-
-extension CreatePersonViewModel: NSFetchedResultsControllerDelegate {
-    
     //Check the increment for the indexpath based by the indepent company, the row if offset by 1
-    
     func company(at index: IndexPath) -> Company? {
         if index.row == 0 {
             return nil
         }
         
         let normalIndex = IndexPath(row: index.row - 1, section: index.section)
-        return companiesFetchedResultsController?.object(at: normalIndex) as? Company
+        return companies?[normalIndex.row]
     }
     
     func companyName(at: IndexPath) -> String? {
@@ -113,17 +110,32 @@ extension CreatePersonViewModel: NSFetchedResultsControllerDelegate {
     }
     
     func numberOfItems(_ section: Int) -> Int {
-        return (companiesFetchedResultsController?.sections?[section].numberOfObjects ?? 0) + 1
+        return (companies?.count ?? 0) + 1
     }
     
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
-        
-        switch type {
-        case .delete, .insert, .update:
-            companiesListener?()
-            break
-        case .move:
-            break
-        }
+    //MARK: Notification Methods
+    func registerForNotification() {
+        let storeHasChangedSelector = #selector(CreatePersonViewModel.storeHasChanged(notification:))
+        NotificationCenter.default.addObserver(self,
+                                               selector: storeHasChangedSelector,
+                                               name: NSNotification.Name.NSManagedObjectContextDidSave,
+                                               object: nil)
     }
+    
+    func unregisterForNotifications() {
+        NotificationCenter.default.removeObserver(self,
+                                                  name: NSNotification.Name.NSManagedObjectContextDidSave,
+                                                  object: nil)
+    }
+    
+    func storeHasChanged(notification: NSNotification) {
+        guard let moc = notification.object as? NSManagedObjectContext, moc == contactsManagedObjectContext else {
+            return
+        }
+        
+        companies = nil
+        fetchCompanies()
+        companiesListener?()
+    }
+    
 }

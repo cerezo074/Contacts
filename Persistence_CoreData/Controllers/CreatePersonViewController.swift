@@ -29,7 +29,6 @@ class CreatePersonViewController: FormController {
                                       toolbarDelegate: self)
         bindActionListener()
         bindCompanySelected()
-        createContactViewModel.setUpCompanies()
     }
 
     override func didReceiveMemoryWarning() {
