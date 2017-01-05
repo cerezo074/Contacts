@@ -27,7 +27,6 @@ class ContactsViewController: UIViewController {
         
         bindDataState()
         bindUserActionsOnDataState()
-        contactsViewModel.setUpContacts()
         showMessageLabel(message: nil)
     }
 

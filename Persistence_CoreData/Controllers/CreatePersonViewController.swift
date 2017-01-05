@@ -28,7 +28,12 @@ class CreatePersonViewController: FormController {
                                       datasource: self,
                                       toolbarDelegate: self)
         bindActionListener()
-        bindCompanySelected()
+        
+        firstnameTextField.text = "Radamel"
+        lastnameTextField.text = "Falcao Garcia"
+        emailTextField.text = "falcao@eltigre.com"
+        jobTextField.text = "Delantero AS Monaco"
+        cellPhoneTextField.text = "3201234567"
     }
 
     override func didReceiveMemoryWarning() {
@@ -65,22 +70,18 @@ class CreatePersonViewController: FormController {
                 if let message = error {
                     print("Error loading companies: \(message)")
                 }
+                
                 self?.companyTextField.isEnabled = error == nil ? true : false
+                
+                if self?.companyTextField == self?.firstResponder() {
+                    self?.companyTextField.reload()
+                }
                 break
             case .loadingCompanies:
                 self?.companyTextField.isEnabled = false
                 break
             default:
                 break
-            }
-        }
-    }
-    
-    func bindCompanySelected() {
-        createContactViewModel.companiesListener = {
-            [weak self] in
-            if self?.companyTextField == self?.firstResponder() {
-                self?.companyTextField.reload()
             }
         }
     }

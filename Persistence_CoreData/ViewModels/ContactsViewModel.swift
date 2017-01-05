@@ -53,6 +53,15 @@ class ContactsViewModel: NSObject, ContactsDAO {
     
     init(contactsManagedObjectContext: NSManagedObjectContext) {
         self.contactsManagedObjectContext = contactsManagedObjectContext
+        super.init()
+        registerForNotification()
+        setUpContacts()
+    }
+    
+    deinit {
+        dataListener = nil
+        userActionOnDataListener = nil
+        unregisterForNotifications()
     }
     
     func setUpContacts() {
@@ -113,6 +122,33 @@ class ContactsViewModel: NSObject, ContactsDAO {
         } catch {
             print("Error deleting the object \(person)\nError: \(error)")
         }
+    }
+    
+    //MARK: Notification Methods
+    
+    func registerForNotification() {
+        let storeHasChangedSelector = #selector(CreatePersonViewModel.storeHasChanged(notification:))
+        NotificationCenter.default.addObserver(self,
+                                               selector: storeHasChangedSelector,
+                                               name: NSNotification.Name.NSManagedObjectContextDidSave,
+                                               object: nil)
+    }
+    
+    func unregisterForNotifications() {
+        NotificationCenter.default.removeObserver(self,
+                                                  name: NSNotification.Name.NSManagedObjectContextDidSave,
+                                                  object: nil)
+    }
+    
+    func storeHasChanged(notification: Notification) {
+        guard let moc = notification.object as? NSManagedObjectContext,
+            moc != contactsManagedObjectContext else { return }
+        
+        if contactsManagedObjectContext.persistentStoreCoordinator != moc.persistentStoreCoordinator {
+            return
+        }
+        
+        contactsManagedObjectContext.mergeChanges(fromContextDidSave: notification)
     }
     
 }

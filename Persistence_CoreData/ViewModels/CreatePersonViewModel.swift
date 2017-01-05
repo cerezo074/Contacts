@@ -27,7 +27,6 @@ class CreatePersonViewModel: NSObject, ContactsDAO {
             createPersonActionListener?(cratePersonActionState)
         }
     }
-    var companiesListener: CompanyListener?
     private var companySelected: IndexPath?
 
     private(set) var contactsManagedObjectContext: NSManagedObjectContext
@@ -43,6 +42,7 @@ class CreatePersonViewModel: NSObject, ContactsDAO {
     }
     
     deinit {
+        createPersonActionListener = nil
         unregisterForNotifications()
     }
     
@@ -133,9 +133,12 @@ class CreatePersonViewModel: NSObject, ContactsDAO {
             return
         }
         
+        if moc.persistentStoreCoordinator != contactsManagedObjectContext.persistentStoreCoordinator {
+            return
+        }
+        
         companies = nil
         fetchCompanies()
-        companiesListener?()
     }
     
 }
