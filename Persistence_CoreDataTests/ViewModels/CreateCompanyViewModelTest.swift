@@ -34,6 +34,10 @@ class CreateCompanyViewModelTest: XCTestCase {
         self.viewModel.emptyContactPersistenceStore {
             [weak self] result, error in
             
+            if !result {
+                print("Error deleting all data")
+            }
+            
             guard let `self` = self else { return }
             self.viewModel.createNewCompany(name: "Atletico Nacional",
                                             address: "Cra 85 # 32 - 44",

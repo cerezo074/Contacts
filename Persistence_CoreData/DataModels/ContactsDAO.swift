@@ -161,13 +161,19 @@ extension ContactsDAO {
     }
     
     func emptyContactPersistenceStore(completionBlock: @escaping PerformTaskBlock) {
+        let validation = Validation()
         let validationBlock: ValidationBlock = {
             resultOnPersons, resultOnCompanies in
-            guard let personsHasBeenDeleted = resultOnPersons,
-                let companiesHasBeenDeleted = resultOnCompanies else {
-                    return
+            if let personsHasBeenDeleted = resultOnPersons {
+                validation.left = personsHasBeenDeleted
             }
-            completionBlock(personsHasBeenDeleted && companiesHasBeenDeleted, nil)
+            if let companiesHasBeenDeleted = resultOnCompanies {
+                validation.right = companiesHasBeenDeleted
+            }
+            
+            if let valueA = validation.left, let ValueB = validation.right {
+                completionBlock(valueA && ValueB, nil)
+            }
         }
         
         deleteAllPersons { (result, error) in
@@ -453,4 +459,16 @@ extension ContactsDAO {
         return NSError(domain: "ContactsDAO", code: 1000, userInfo: descriptionDict)
     }
     
+}
+
+//MARK: Valid Object
+
+class Validation: NSObject {
+    var left: Bool?
+    var right: Bool?
+    let id = UUID().uuidString
+    
+    deinit {
+        print("Validation with id:\(id) would be deallocated")
+    }
 }
