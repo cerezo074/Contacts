@@ -75,7 +75,7 @@ class ContactDataStack: NSObject {
         persistenceContext?.undoManager = nil
         
         mainContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
-        mainContext?.persistentStoreCoordinator = storeCoordinator
+        mainContext?.parent = persistenceContext
         mainContext?.undoManager = nil
         
         let urls = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)

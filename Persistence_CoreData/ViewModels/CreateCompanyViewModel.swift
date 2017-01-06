@@ -36,7 +36,10 @@ class CreateCompanyViewModel: ContactsDAO {
             if result != nil && error == nil {
                 self?.createCompanyActionState = .companyCreated(error: nil)
             } else {
-                self?.createCompanyActionState = .companyCreated(error: error?.localizedDescription)
+                //NOTE: transform the error in case that error was triggered by validating the scheme
+                print("Error creating the company, error:\(error)")
+                self?.resetTemporallyInsertions()
+                self?.createCompanyActionState = .companyCreated(error: "Sorry but there was an error, you should use valid data on fields!.")
             }
         }
     }

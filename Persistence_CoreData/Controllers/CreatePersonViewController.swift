@@ -29,10 +29,10 @@ class CreatePersonViewController: FormController {
                                       toolbarDelegate: self)
         bindActionListener()
         
-        firstnameTextField.text = "Radamel"
-        lastnameTextField.text = "Falcao Garcia"
-        emailTextField.text = "falcao@eltigre.com"
-        jobTextField.text = "Delantero AS Monaco"
+        firstnameTextField.text = "Luis Roman"
+        lastnameTextField.text = "Riquelme"
+        emailTextField.text = "requelme@argenito.com"
+        jobTextField.text = "Mediocamposta"
         cellPhoneTextField.text = "3201234567"
     }
 

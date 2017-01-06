@@ -85,7 +85,10 @@ class CreatePersonViewModel: NSObject, ContactsDAO {
                             if result != nil && error == nil {
                                 self?.cratePersonActionState = .contactCreated(error: nil)
                             } else {
-                                self?.cratePersonActionState = .contactCreated(error: error?.localizedDescription)
+                                //NOTE: transform the error in case that error was triggered by validating the scheme
+                                print("Error creating the person, error:\(error)")
+                                self?.resetTemporallyInsertions()
+                                self?.cratePersonActionState = .contactCreated(error:"Sorry but there was an error, you should use valid data on fields!.")
                             }
             }
         }
