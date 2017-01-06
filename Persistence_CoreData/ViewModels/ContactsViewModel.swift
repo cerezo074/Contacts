@@ -25,7 +25,7 @@ enum UserActionOnData {
 typealias ContactsDataStateListener = (_ state: DataState) -> ()
 typealias ContactsUserActionOnDataListener = (_ userAction: UserActionOnData) -> ()
 
-class ContactsViewModel: NSObject, ContactsDAO, ContextHasChangedProtocol {
+class ContactsViewModel: NSObject, ContactsDAO {
     
     var dataListener: ContactsDataStateListener?
     private var dataState: DataState = .Iddle {
@@ -54,14 +54,12 @@ class ContactsViewModel: NSObject, ContactsDAO, ContextHasChangedProtocol {
     init(managedObjectContextForTask: NSManagedObjectContext) {
         self.managedObjectContextForTask = managedObjectContextForTask
         super.init()
-        registerForDidSaveNotification(obj: self)
         setUpContacts()
     }
     
     deinit {
         dataListener = nil
         userActionOnDataListener = nil
-        unregisterForDidSaveNotification(obj: self)
     }
     
     func setUpContacts() {
@@ -123,18 +121,6 @@ class ContactsViewModel: NSObject, ContactsDAO, ContextHasChangedProtocol {
                 print("Error deleting person: \(error?.localizedDescription)")
             }
         }
-    }
-    
-    //MARK: Notification Methods
-    func storeShouldChange(notification: Notification) {
-        guard let moc = notification.object as? NSManagedObjectContext,
-            moc != managedObjectContextForTask else { return }
-        
-        if managedObjectContextForTask.persistentStoreCoordinator != moc.persistentStoreCoordinator {
-            return
-        }
-        
-        managedObjectContextForTask.mergeChanges(fromContextDidSave: notification)
     }
     
 }

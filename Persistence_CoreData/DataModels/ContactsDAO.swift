@@ -48,19 +48,20 @@ extension ContactsDAO {
         managedObjectContextForTask.perform {
             [weak self] in
             
-            guard let `self` = self else {
-                completionBlock(nil, nil)
-                return
-            }
-
             do {
-                guard let persons = try self.readSync(fetchRequest: allPersonsRequest) as? [Person] else {
-                    completionBlock(nil, Self.createError("Invalid Entity"))
+                guard let persons = try self?.readSync(fetchRequest: allPersonsRequest) as? [Person] else {
+                    self?.callOnMainThreadMultipleResultsBlock(completionBlock: completionBlock,
+                                                               result: nil,
+                                                               error: Self.createError("Invalid Entity"))
                     return
                 }
-                completionBlock(persons, nil)
+                self?.callOnMainThreadMultipleResultsBlock(completionBlock: completionBlock,
+                                                           result: persons,
+                                                           error:nil)
             } catch {
-                completionBlock(nil, error)
+                self?.callOnMainThreadMultipleResultsBlock(completionBlock: completionBlock,
+                                                           result: nil,
+                                                           error: error)
             }
         }
     }
@@ -70,19 +71,20 @@ extension ContactsDAO {
         managedObjectContextForTask.perform {
             [weak self] in
             
-            guard let `self` = self else {
-                completionBlock(nil, nil)
-                return
-            }
-            
             do {
-                guard let companies = try self.readSync(fetchRequest: allCompaniesRequest) as? [Company] else {
-                    completionBlock(nil, Self.createError("Invalid Entity"))
+                guard let companies = try self?.readSync(fetchRequest: allCompaniesRequest) as? [Company] else {
+                    self?.callOnMainThreadMultipleResultsBlock(completionBlock: completionBlock,
+                                                               result: nil,
+                                                               error: Self.createError("Invalid Entity"))
                     return
                 }
-                completionBlock(companies, nil)
+                self?.callOnMainThreadMultipleResultsBlock(completionBlock: completionBlock,
+                                                           result: companies,
+                                                           error: nil)
             } catch {
-                completionBlock(nil, error)
+                self?.callOnMainThreadMultipleResultsBlock(completionBlock: completionBlock,
+                                                           result: nil,
+                                                           error: error)
             }
         }
     }
@@ -94,12 +96,10 @@ extension ContactsDAO {
             [weak self] in
             
             do {
-                guard let `self` = self else {
-                    completionBlock(false, nil)
-                    return
-                }
-                guard let persons = try self.readSync(fetchRequest: personsRequest) as? [Person] else {
-                    completionBlock(false, Self.createError("Invalid Entity"))
+                guard let persons = try self?.readSync(fetchRequest: personsRequest) as? [Person] else {
+                    self?.callOnMainThreadSimpleBlock(completionBlock: completionBlock,
+                                                      result: false,
+                                                      error: Self.createError("Invalid Entity"))
                     return
                 }
                 
@@ -108,14 +108,18 @@ extension ContactsDAO {
                         company.removeFromEmployee(person)
                         person.company = nil
                     }
-                    self.managedObjectContextForTask.delete(person)
-                    try self.managedObjectContextForTask.save()
+                    self?.managedObjectContextForTask.delete(person)
+                    try self?.managedObjectContextForTask.save()
                 }
  
-                let personsAfterDeleted = try self.readSync(fetchRequest: personsAfectedRequest)
-                completionBlock(personsAfterDeleted.count == 0, nil)
+                let personsAfterDeleted = try self?.readSync(fetchRequest: personsAfectedRequest)
+                self?.callOnMainThreadSimpleBlock(completionBlock: completionBlock,
+                                                  result: personsAfterDeleted?.count == 0,
+                                                  error: nil)
             } catch {
-                completionBlock(false, error)
+                self?.callOnMainThreadSimpleBlock(completionBlock: completionBlock,
+                                                  result: false,
+                                                  error: error)
             }
         }
     }
@@ -126,14 +130,11 @@ extension ContactsDAO {
         managedObjectContextForTask.perform {
             [weak self] in
             
-            guard let `self` = self else {
-                completionBlock(false, nil)
-                return
-            }
-            
             do {
-                guard let companies = try self.readSync(fetchRequest: companiesRequest) as? [Company] else {
-                    completionBlock(false, Self.createError("Invalid Entity"))
+                guard let companies = try self?.readSync(fetchRequest: companiesRequest) as? [Company] else {
+                    self?.callOnMainThreadSimpleBlock(completionBlock: completionBlock,
+                                                      result: false,
+                                                      error: Self.createError("Invalid Entity"))
                     return
                 }
                 
@@ -143,27 +144,32 @@ extension ContactsDAO {
                             if let employee = employee as? Person {
                                 company.removeFromEmployee(employee)
                                 employee.company = nil
-                                try self.managedObjectContextForTask.save()
+                                try self?.managedObjectContextForTask.save()
                             }
                         }
                     }
                     
-                    self.managedObjectContextForTask.delete(company)
-                    try self.managedObjectContextForTask.save()
+                    self?.managedObjectContextForTask.delete(company)
+                    try self?.managedObjectContextForTask.save()
                 }
                 
-                let companiesAfterDeleted = try self.readSync(fetchRequest: companiesAfectedRequest)
-                completionBlock(companiesAfterDeleted.count == 0, nil)
+                let companiesAfterDeleted = try self?.readSync(fetchRequest: companiesAfectedRequest)
+                self?.callOnMainThreadSimpleBlock(completionBlock: completionBlock,
+                                                  result: companiesAfterDeleted?.count == 0,
+                                                  error: nil)
             } catch {
-                completionBlock(false, error)
+                self?.callOnMainThreadSimpleBlock(completionBlock: completionBlock,
+                                                  result: false,
+                                                  error: error)
             }
         }
     }
     
     func emptyContactPersistenceStore(completionBlock: @escaping PerformTaskBlock) {
         let validation = Validation()
+        
         let validationBlock: ValidationBlock = {
-            resultOnPersons, resultOnCompanies in
+            [weak self] resultOnPersons, resultOnCompanies in
             if let personsHasBeenDeleted = resultOnPersons {
                 validation.left = personsHasBeenDeleted
             }
@@ -172,7 +178,9 @@ extension ContactsDAO {
             }
             
             if let valueA = validation.left, let ValueB = validation.right {
-                completionBlock(valueA && ValueB, nil)
+                self?.callOnMainThreadSimpleBlock(completionBlock: completionBlock,
+                                                  result: valueA && ValueB,
+                                                  error: nil)
             }
         }
         
@@ -199,25 +207,35 @@ extension ContactsDAO {
         managedObjectContextForTask.perform {
             [weak self] in
             
-            guard let `self` = self else {
-                completionBlock(nil, nil)
+            guard let strongSelf = self else {
+                self?.callOnMainThreadResultBlock(completionBlock: completionBlock,
+                                                  result: nil,
+                                                  error: nil)
                 return
             }
             
             do {
-                let usersFetched = try self.readSync(fetchRequest: userExistRequest)
+                let usersFetched = try strongSelf.readSync(fetchRequest: userExistRequest)
                 if usersFetched.count > 0 {
-                    completionBlock(nil, Self.createError("Person Exist"))
+                    strongSelf.callOnMainThreadResultBlock(completionBlock: completionBlock,
+                                                           result: nil,
+                                                           error: Self.createError("Person Exist"))
                     return
                 }
-                if let companyToSave = company, companyToSave.managedObjectContext != self.managedObjectContextForTask {
-                    completionBlock(nil, Self.createError("Company belong Different MOC"))
-                    return
+                
+                var companyToAdd = company
+                if let companyToSave = company,
+                    companyToSave.managedObjectContext != strongSelf.managedObjectContextForTask,
+                    let companyFetched = try? strongSelf.managedObjectContextForTask.existingObject(with: companyToSave.objectID) as? Company {
+                    companyToAdd = companyFetched
                 }
+                
                 guard let newContact = NSEntityDescription.insertNewObject(
                     forEntityName: "Person",
-                    into: self.managedObjectContextForTask) as? Person else {
-                        completionBlock(nil, Self.createError("Invalid Entity"))
+                    into: strongSelf.managedObjectContextForTask) as? Person else {
+                        strongSelf.callOnMainThreadResultBlock(completionBlock: completionBlock,
+                                                               result: nil,
+                                                               error: Self.createError("Invalid Entity"))
                         return
                 }
                 
@@ -227,14 +245,18 @@ extension ContactsDAO {
                 newContact.cellphone = cellPhone
                 newContact.identifier = identifier
                 newContact.job = job
-                newContact.company = company
-                company?.addToEmployee(newContact)
+                newContact.company = companyToAdd
+                companyToAdd?.addToEmployee(newContact)
                 
                 try newContact.validateForInsert()
-                try self.managedObjectContextForTask.save()
-                completionBlock(newContact, nil)
+                try strongSelf.managedObjectContextForTask.save()
+                strongSelf.callOnMainThreadResultBlock(completionBlock: completionBlock,
+                                                       result: newContact,
+                                                       error: nil)
             } catch {
-                completionBlock(nil, error)
+                strongSelf.callOnMainThreadResultBlock(completionBlock: completionBlock,
+                                                       result: nil,
+                                                       error: error)
             }
         }
     }
@@ -250,21 +272,27 @@ extension ContactsDAO {
         managedObjectContextForTask.perform {
             [weak self] in
             
-            guard let `self` = self else {
-                completionBlock(nil, nil)
+            guard let strongSelf = self else {
+                self?.callOnMainThreadResultBlock(completionBlock: completionBlock,
+                                                  result: nil,
+                                                  error: nil)
                 return
             }
             
             do {
-                let companyFetched = try self.readSync(fetchRequest: companyExistRequestValidator)
+                let companyFetched = try strongSelf.readSync(fetchRequest: companyExistRequestValidator)
                 if companyFetched.count > 0 {
-                    completionBlock(nil, Self.createError("Company Exist"))
+                    strongSelf.callOnMainThreadResultBlock(completionBlock: completionBlock,
+                                                           result: nil,
+                                                           error: Self.createError("Company Exist"))
                     return
                 }
                 guard let newCompany = NSEntityDescription.insertNewObject(
                     forEntityName: "Company",
-                    into: self.managedObjectContextForTask) as? Company else {
-                        completionBlock(nil, Self.createError("Invalid Entity"))
+                    into: strongSelf.managedObjectContextForTask) as? Company else {
+                        strongSelf.callOnMainThreadResultBlock(completionBlock: completionBlock,
+                                                               result: nil,
+                                                               error: Self.createError("Invalid Entity"))
                         return
                 }
                 
@@ -275,10 +303,14 @@ extension ContactsDAO {
                 newCompany.telephone = telephone
                 
                 try newCompany.validateForInsert()
-                try self.managedObjectContextForTask.save()
-                completionBlock(newCompany, nil)
+                try strongSelf.managedObjectContextForTask.save()
+                strongSelf.callOnMainThreadResultBlock(completionBlock: completionBlock,
+                                                       result: newCompany,
+                                                       error: nil)
             } catch {
-                completionBlock(nil, error)
+                strongSelf.callOnMainThreadResultBlock(completionBlock: completionBlock,
+                                                       result: nil,
+                                                       error: error)
             }
         }
     }
@@ -287,15 +319,10 @@ extension ContactsDAO {
         managedObjectContextForTask.perform {
             [weak self] in
             
-            guard let `self` = self else {
-                completionBlock(false, nil)
-                return
-            }
-            
             do {
 
-                let objects = try self.readSync(fetchRequest: validationRequest)
-                if objects.count >= 1 {
+                let objectsArray = try self?.readSync(fetchRequest: validationRequest)
+                if let objects = objectsArray, objects.count >= 1 {
                 
                     for object in objects {
                         //Person entity(Weak entity) has a relationship with the Company entity(Strong entity)
@@ -303,23 +330,30 @@ extension ContactsDAO {
                             let company = person.company
                             company?.removeFromEmployee(person)
                             person.company = nil
-                            self.managedObjectContextForTask.delete(person)
-                            try self.managedObjectContextForTask.save()
-                            completionBlock(true, nil)
+                            self?.managedObjectContextForTask.delete(person)
+                            try self?.managedObjectContextForTask.save()
+                            self?.callOnMainThreadSimpleBlock(completionBlock: completionBlock,
+                                                        result: true,
+                                                        error: nil)
                         } else {
                             //Objects without restrictions
-                            self.managedObjectContextForTask.delete(object)
-                            try self.managedObjectContextForTask.save()
-                            completionBlock(true, nil)
+                            self?.managedObjectContextForTask.delete(object)
+                            try self?.managedObjectContextForTask.save()
+                            self?.callOnMainThreadSimpleBlock(completionBlock: completionBlock,
+                                                              result: true,
+                                                              error: nil)
                         }
                     }
-
                 } else {
-                    completionBlock(false, Self.createError("Object not exist in Store"))
+                    self?.callOnMainThreadSimpleBlock(completionBlock: completionBlock,
+                                                      result: false,
+                                                      error:  Self.createError("Object not exist in Store"))
                 }
                 
             } catch {
-                completionBlock(false, error)
+                self?.callOnMainThreadSimpleBlock(completionBlock: completionBlock,
+                                                  result: false,
+                                                  error:  error)
             }
         }
     }
@@ -369,10 +403,15 @@ extension ContactsDAO {
         
         let asynchronousFetchRequest = NSAsynchronousFetchRequest(fetchRequest: fetchRequest) { (asynchronousFetchResult) -> Void in
             DispatchQueue.main.async {
+                [weak self] in
                 if let result = asynchronousFetchResult.finalResult {
-                    completionBlock(result, nil)
+                    self?.callOnMainThreadMultipleResultsBlock(completionBlock: completionBlock,
+                                                               result: result,
+                                                               error: nil)
                 } else {
-                    completionBlock(nil, Self.createError("Objects not founded."))
+                    self?.callOnMainThreadMultipleResultsBlock(completionBlock: completionBlock,
+                                                               result: nil,
+                                                               error: Self.createError("Objects not founded."))
                 }
             }
         }
@@ -380,7 +419,9 @@ extension ContactsDAO {
         do {
             _ = try managedObjectContextForTask.execute(asynchronousFetchRequest)
         } catch {
-            completionBlock(nil, error)
+            self.callOnMainThreadMultipleResultsBlock(completionBlock: completionBlock,
+                                                       result: nil,
+                                                       error: error)
         }
         
     }
@@ -389,16 +430,18 @@ extension ContactsDAO {
         managedObjectContextForTask.perform {
             [weak self] in
             
-            guard let `self` = self else {
-                completionBlock(false, nil)
+            guard let strongSelf = self else {
+                self?.callOnMainThreadSimpleBlock(completionBlock: completionBlock,
+                                                  result: false,
+                                                  error: nil)
                 return
             }
             
             do {
                 var objectToValidate = object
                 
-                if object.managedObjectContext != self.managedObjectContextForTask {
-                    objectToValidate = try self.managedObjectContextForTask.existingObject(with: object.objectID)
+                if object.managedObjectContext != strongSelf.managedObjectContextForTask {
+                    objectToValidate = try strongSelf.managedObjectContextForTask.existingObject(with: object.objectID)
                     
                     /**
                      NOTE: You should take care about the relationships, because some relationships
@@ -425,21 +468,61 @@ extension ContactsDAO {
                         companyToUpdate.address = company.address
                         companyToUpdate.telephone = company.telephone
                     } else {
-                        completionBlock(false, Self.createError("Objects not belong to valid entity"))
+                        strongSelf.callOnMainThreadSimpleBlock(completionBlock: completionBlock,
+                                                          result: false,
+                                                          error: Self.createError("Objects not belong to valid entity"))
                         return
                     }
                 }
                 
                 try objectToValidate.validateForUpdate()
-                try self.managedObjectContextForTask.save()
-                completionBlock(true, nil)
+                try strongSelf.managedObjectContextForTask.save()
+                strongSelf.callOnMainThreadSimpleBlock(completionBlock: completionBlock,
+                                                       result: true,
+                                                       error: nil)
             } catch {
-                completionBlock(false, error)
+                strongSelf.callOnMainThreadSimpleBlock(completionBlock: completionBlock,
+                                                       result: false,
+                                                       error: error)
             }
         }
     }
     
-    //MARK: Utils Methods
+}
+
+//MARK: Utils Methods
+
+extension ContactsDAO {
+    
+    func callOnMainThreadSimpleBlock(completionBlock: @escaping PerformTaskBlock, result: Bool, error: Error?) {
+        if Thread.current != Thread.main {
+            DispatchQueue.main.async {
+                completionBlock(result, error)
+            }
+            return
+        }
+        completionBlock(result, error)
+    }
+    
+    func callOnMainThreadResultBlock(completionBlock: @escaping PerformTaskWithResultBlock, result: Any?, error: Error?) {
+        if Thread.current != Thread.main {
+            DispatchQueue.main.async {
+                completionBlock(result, error)
+            }
+            return
+        }
+        completionBlock(result, error)
+    }
+    
+    func callOnMainThreadMultipleResultsBlock(completionBlock: @escaping PerformTaskWithMultipleResultBlock, result: [Any]?, error: Error?) {
+        if Thread.current != Thread.main {
+            DispatchQueue.main.async {
+                completionBlock(result, error)
+            }
+            return
+        }
+        completionBlock(result, error)
+    }
     
     func createRequestWith(_ entityName: String, _ predicateFormat: String, _ arguments: [Any]) -> NSFetchRequest<NSFetchRequestResult> {
         let fetchedRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
@@ -448,12 +531,6 @@ extension ContactsDAO {
         return fetchedRequest
     }
     
-}
-
-//MARK: Errors
-
-extension ContactsDAO {
-
     static func createError(_ descriptionMessage: String) -> Error {
         let descriptionDict = [NSLocalizedDescriptionKey : descriptionMessage]
         return NSError(domain: "ContactsDAO", code: 1000, userInfo: descriptionDict)

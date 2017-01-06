@@ -17,46 +17,51 @@ enum CreatePersonAction {
 }
 
 typealias CreatePersonActionListener = (_ state: CreatePersonAction) -> Void
-typealias CompanyListener = () -> Void
 
-class CreatePersonViewModel: NSObject, ContactsDAO, ContextHasChangedProtocol {
+class CreatePersonViewModel: NSObject, ContactsDAO {
     
     var createPersonActionListener: CreatePersonActionListener?
-    private var cratePersonActionState: CreatePersonAction = .edition {
+    var cratePersonActionState: CreatePersonAction = .edition {
         didSet{
             createPersonActionListener?(cratePersonActionState)
         }
     }
-    private var companySelected: IndexPath?
-
     private(set) var managedObjectContextForTask: NSManagedObjectContext
-    private(set) var companies: [Company]?
+    private(set) var contextForCompanies: NSManagedObjectContext
+    private(set) var companiesFetchResultsController: NSFetchedResultsController<NSFetchRequestResult>?
+    private var companySelected: IndexPath?
     var sections = 1
     var indepentCompanyName = "Indepent"
     
-    init(managedObjectContextForTask: NSManagedObjectContext) {
-        self.managedObjectContextForTask = managedObjectContextForTask
+    init(contextForCompanies: NSManagedObjectContext, contextForCreatePerson: NSManagedObjectContext) {
+        self.managedObjectContextForTask = contextForCreatePerson
+        self.contextForCompanies = contextForCompanies
         
         super.init()
-        registerForDidSaveNotification(obj: self)
         fetchCompanies()
     }
     
     deinit {
         createPersonActionListener = nil
-        unregisterForDidSaveNotification(obj: self)
     }
     
     func fetchCompanies() {
         cratePersonActionState = .loadingCompanies
-        self.allCompanies { [weak self] (result, error) in
-            guard let companies = result as? [Company] else {
-                self?.cratePersonActionState = .companiesLoaded(error: error?.localizedDescription)
-                return
-            }
-            
-            self?.companies = companies
-            self?.cratePersonActionState = .companiesLoaded(error: nil)
+        let companiesFetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Company")
+        companiesFetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+        self.companiesFetchResultsController = NSFetchedResultsController(
+            fetchRequest: companiesFetchRequest,
+            managedObjectContext: contextForCompanies,
+            sectionNameKeyPath: nil,
+            cacheName: nil)
+        self.companiesFetchResultsController?.delegate = self
+        
+        do {
+            try self.companiesFetchResultsController?.performFetch()
+            self.cratePersonActionState = .companiesLoaded(error: nil)
+        } catch {
+            print("Error loading companies, error: \(error)")
+            self.cratePersonActionState = .companiesLoaded(error: error.localizedDescription)
         }
     }
     
@@ -95,7 +100,11 @@ class CreatePersonViewModel: NSObject, ContactsDAO, ContextHasChangedProtocol {
     func deselectCompany() {
         companySelected = nil
     }
-    
+
+}
+
+extension CreatePersonViewModel: NSFetchedResultsControllerDelegate {
+
     //Check the increment for the indexpath based by the indepent company, the row if offset by 1
     func company(_ index: IndexPath) -> Company? {
         if index.row == 0 {
@@ -103,7 +112,7 @@ class CreatePersonViewModel: NSObject, ContactsDAO, ContextHasChangedProtocol {
         }
         
         let normalIndex = IndexPath(row: index.row - 1, section: index.section)
-        return companies?[normalIndex.row]
+        return companiesFetchResultsController?.object(at: normalIndex) as? Company
     }
     
     func companyName(at: IndexPath) -> String? {
@@ -111,22 +120,16 @@ class CreatePersonViewModel: NSObject, ContactsDAO, ContextHasChangedProtocol {
     }
     
     func numberOfItems(_ section: Int) -> Int {
-        return (companies?.count ?? 0) + 1
+        return (companiesFetchResultsController?.sections?[section].numberOfObjects ?? 0) + 1
     }
     
-    //MARK: Notification Methods
-    
-        func storeShouldChange(notification: Notification) {
-            guard let moc = notification.object as? NSManagedObjectContext, moc == managedObjectContextForTask else {
-            return
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+        switch type {
+        case .delete, .insert, .update:
+            cratePersonActionState = .companiesLoaded(error: nil)
+        default:
+            break
         }
-        
-        if moc.persistentStoreCoordinator != managedObjectContextForTask.persistentStoreCoordinator {
-            return
-        }
-        
-        companies = nil
-        fetchCompanies()
     }
     
 }

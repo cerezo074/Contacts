@@ -73,7 +73,7 @@ class CreatePersonViewController: FormController {
                 
                 self?.companyTextField.isEnabled = error == nil ? true : false
                 
-                if self?.companyTextField == self?.firstResponder() {
+                if error == nil && self?.companyTextField == self?.firstResponder() {
                     self?.companyTextField.reload()
                 }
                 break
