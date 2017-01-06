@@ -29,29 +29,25 @@ class CreateCompanyViewModelTest: XCTestCase {
     func testShouldCreateCompany() {
     
         let persistenLoadExpectation = expectation(description: "DataBaseConection")
+        self.viewModel = CreateCompanyViewModel(managedObjectContextForTask: self.contactDataStack.saveContext())
         
-        DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + timeToLoadData) {
-            [weak self] in
+        self.viewModel.emptyContactPersistenceStore {
+            [weak self] result, error in
             
-            guard let `self` = self else {
-                return
-            }
-            
-            self.viewModel = CreateCompanyViewModel(contactsManagedObjectContext: self.contactDataStack.mainContext!)
-            
-            if self.viewModel.emptyContactPersistenceStore() {
-                print("Data deleted!!")
-            }
-            
+            guard let `self` = self else { return }
             self.viewModel.createNewCompany(name: "Atletico Nacional",
                                             address: "Cra 85 # 32 - 44",
                                             email: "nacio@verdolaga.com",
                                             telephone: "21440012")
-            XCTAssert(self.viewModel.createCompanyActionState == .companyCreated(error: nil), "Company not creaded")
-            
-            persistenLoadExpectation.fulfill()
         }
         
+        DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + timeToPerformTask) {
+            [weak self] in
+            guard let `self` = self else { return }
+            XCTAssert(self.viewModel.createCompanyActionState == .companyCreated(error: nil), "Company not creaded")
+            persistenLoadExpectation.fulfill()
+        }
+       
         waitForExpectations(timeout: timeToLoadData + timeToPerformTask, handler: {
             error in
             if let error = error {

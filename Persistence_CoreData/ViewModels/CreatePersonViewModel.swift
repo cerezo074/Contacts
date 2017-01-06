@@ -19,7 +19,7 @@ enum CreatePersonAction {
 typealias CreatePersonActionListener = (_ state: CreatePersonAction) -> Void
 typealias CompanyListener = () -> Void
 
-class CreatePersonViewModel: NSObject, ContactsDAO {
+class CreatePersonViewModel: NSObject, ContactsDAO, ContextHasChangedProtocol {
     
     var createPersonActionListener: CreatePersonActionListener?
     private var cratePersonActionState: CreatePersonAction = .edition {
@@ -29,59 +29,60 @@ class CreatePersonViewModel: NSObject, ContactsDAO {
     }
     private var companySelected: IndexPath?
 
-    private(set) var contactsManagedObjectContext: NSManagedObjectContext
+    private(set) var managedObjectContextForTask: NSManagedObjectContext
     private(set) var companies: [Company]?
     var sections = 1
+    var indepentCompanyName = "Indepent"
     
-    init(contactsManagedObjectContext: NSManagedObjectContext) {
-        self.contactsManagedObjectContext = contactsManagedObjectContext
+    init(managedObjectContextForTask: NSManagedObjectContext) {
+        self.managedObjectContextForTask = managedObjectContextForTask
         
         super.init()
-        registerForNotification()
+        registerForDidSaveNotification(obj: self)
         fetchCompanies()
     }
     
     deinit {
         createPersonActionListener = nil
-        unregisterForNotifications()
+        unregisterForDidSaveNotification(obj: self)
     }
     
     func fetchCompanies() {
         cratePersonActionState = .loadingCompanies
-
-        DispatchQueue.global().async { [weak self] in
-            guard let `self` = self else { return }
-            do {
-                self.companies = try self.allCompanies()
-                self.cratePersonActionState = .companiesLoaded(error: nil)
-            } catch {
-                self.cratePersonActionState = .companiesLoaded(error: error.localizedDescription)
+        self.allCompanies { [weak self] (result, error) in
+            guard let companies = result as? [Company] else {
+                self?.cratePersonActionState = .companiesLoaded(error: error?.localizedDescription)
+                return
             }
+            
+            self?.companies = companies
+            self?.cratePersonActionState = .companiesLoaded(error: nil)
         }
-        
     }
     
     func createNewContact(firstname: String, lastname: String, email: String, cellPhone: String, job: String) {
         
         var companyToAdd: Company?
-        if let companySelectedIndex = companySelected, let companyToAssingEmployee = company(at: companySelectedIndex){
+        
+        if let companySelectedIndex = companySelected, let companyToAssingEmployee = company(companySelectedIndex) {
             companyToAdd = companyToAssingEmployee
         }
+        
         do {
-            let _  = try createPerson(firstName: firstname,
-                                      lastname: lastname,
-                                      email: email,
-                                      cellPhone: cellPhone,
-                                      identifier: email,
-                                      job: job,
-                                      company: companyToAdd)
-            cratePersonActionState = .contactCreated(error: nil)
-        } catch PersonCreatingErrors.personExist {
-            cratePersonActionState = .contactCreated(error: "User exits!")
-        } catch {
-            print("There is an error creating the new company: \(error)")
-            cratePersonActionState = .contactCreated(error: "Somethig is wrong, please check the fields contain valid data")
-            resetTemporallyInsertions()
+            createPerson(firstName: firstname,
+                         lastname: lastname,
+                         email: email,
+                         cellPhone: cellPhone,
+                         identifier: email,
+                         job: job,
+                         company: companyToAdd) {
+                            [weak self] result, error in
+                            if result != nil && error == nil {
+                                self?.cratePersonActionState = .contactCreated(error: nil)
+                            } else {
+                                self?.cratePersonActionState = .contactCreated(error: error?.localizedDescription)
+                            }
+            }
         }
     }
     
@@ -96,7 +97,7 @@ class CreatePersonViewModel: NSObject, ContactsDAO {
     }
     
     //Check the increment for the indexpath based by the indepent company, the row if offset by 1
-    func company(at index: IndexPath) -> Company? {
+    func company(_ index: IndexPath) -> Company? {
         if index.row == 0 {
             return nil
         }
@@ -106,7 +107,7 @@ class CreatePersonViewModel: NSObject, ContactsDAO {
     }
     
     func companyName(at: IndexPath) -> String? {
-        return company(at: at)?.name
+        return company(at)?.name
     }
     
     func numberOfItems(_ section: Int) -> Int {
@@ -114,26 +115,13 @@ class CreatePersonViewModel: NSObject, ContactsDAO {
     }
     
     //MARK: Notification Methods
-    func registerForNotification() {
-        let storeHasChangedSelector = #selector(CreatePersonViewModel.storeHasChanged(notification:))
-        NotificationCenter.default.addObserver(self,
-                                               selector: storeHasChangedSelector,
-                                               name: NSNotification.Name.NSManagedObjectContextDidSave,
-                                               object: nil)
-    }
     
-    func unregisterForNotifications() {
-        NotificationCenter.default.removeObserver(self,
-                                                  name: NSNotification.Name.NSManagedObjectContextDidSave,
-                                                  object: nil)
-    }
-    
-    func storeHasChanged(notification: NSNotification) {
-        guard let moc = notification.object as? NSManagedObjectContext, moc == contactsManagedObjectContext else {
+        func storeShouldChange(notification: Notification) {
+            guard let moc = notification.object as? NSManagedObjectContext, moc == managedObjectContextForTask else {
             return
         }
         
-        if moc.persistentStoreCoordinator != contactsManagedObjectContext.persistentStoreCoordinator {
+        if moc.persistentStoreCoordinator != managedObjectContextForTask.persistentStoreCoordinator {
             return
         }
         

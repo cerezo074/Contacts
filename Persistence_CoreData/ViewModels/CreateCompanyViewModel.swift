@@ -11,14 +11,14 @@ import CoreData
 
 typealias CreateCompanyActionsListener = (_ state: CreateCompanyViewModel.CreateCompanyAction) -> Void
 
-struct CreateCompanyViewModel: ContactsDAO {
+class CreateCompanyViewModel: ContactsDAO {
     
     enum CreateCompanyAction: Equatable {
         case editing
         case companyCreated(error: String?)
     }
     
-    var contactsManagedObjectContext: NSManagedObjectContext
+    var managedObjectContextForTask: NSManagedObjectContext
     var createCompanyListener: CreateCompanyActionsListener?
     private(set) var createCompanyActionState: CreateCompanyAction = .editing {
         didSet {
@@ -26,19 +26,18 @@ struct CreateCompanyViewModel: ContactsDAO {
         }
     }
     
-    init(contactsManagedObjectContext: NSManagedObjectContext) {
-        self.contactsManagedObjectContext = contactsManagedObjectContext
+    init(managedObjectContextForTask: NSManagedObjectContext) {
+        self.managedObjectContextForTask = managedObjectContextForTask
     }
     
-    mutating func createNewCompany(name: String, address: String, email: String, telephone: String?) {
-        do {
-            let _ = try createCompany(name: name, email: email, address: address, telephone: telephone)
-            createCompanyActionState = .companyCreated(error: nil)
-        } catch CompanyCreatingErrors.companyExist {
-            createCompanyActionState = .companyCreated(error: "Company Exists!.")
-        } catch {
-            createCompanyActionState = .companyCreated(error: "Somethig is wrong, please check the fields contain valid data")
-            resetTemporallyInsertions()
+    func createNewCompany(name: String, address: String, email: String, telephone: String?) {
+        createCompany(name: name, email: email, address: address, telephone: telephone) {
+            [weak self] result, error in
+            if result != nil && error == nil {
+                self?.createCompanyActionState = .companyCreated(error: nil)
+            } else {
+                self?.createCompanyActionState = .companyCreated(error: error?.localizedDescription)
+            }
         }
     }
     

@@ -405,21 +405,21 @@ class ContactsDAOTest: XCTestCase {
     
 }
 
-struct MyContactsManager: ContactsDAO {
+class MyContactsManager: NSObject, ContactsDAO {
 
     static let monkeysCompanyIdentifier = "Monkey's Lab"
     static let lionsCompanyIdentifier = "Lion's Lab"
     static let userDefaultIdentifier = "eph_074@hotmail.com"
-    var contactsManagedObjectContext: NSManagedObjectContext
+    var managedObjectContextForTask: NSManagedObjectContext
     
-    init(contactsManagedObjectContext: NSManagedObjectContext) {
-        self.contactsManagedObjectContext = contactsManagedObjectContext
+    init(managedObjectContextForTask: NSManagedObjectContext) {
+        self.managedObjectContextForTask = managedObjectContextForTask
     }
     
     func createMonkeysCompanyEntity() -> Company {
         let monkeys = NSEntityDescription.insertNewObject(
             forEntityName: "Company",
-            into: contactsManagedObjectContext) as! Company
+            into: managedObjectContextForTask) as! Company
         
         monkeys.name = MyContactsManager.monkeysCompanyIdentifier
         monkeys.email = "medellin@monkeyslab.com"
@@ -435,7 +435,7 @@ struct MyContactsManager: ContactsDAO {
         let monkeys = createMonkeysCompanyEntity()
         let lions = NSEntityDescription.insertNewObject(
             forEntityName: "Company",
-            into: contactsManagedObjectContext) as! Company
+            into: managedObjectContextForTask) as! Company
         
         lions.name = MyContactsManager.lionsCompanyIdentifier
         lions.email = "medellin@lionslab.com"
@@ -454,7 +454,7 @@ struct MyContactsManager: ContactsDAO {
         
         let jaime = NSEntityDescription.insertNewObject(
             forEntityName: "Person",
-            into: contactsManagedObjectContext) as! Person
+            into: managedObjectContextForTask) as! Person
         
         jaime.firstname = "Jaime"
         jaime.lastname = "Perez Cordoba"
@@ -467,7 +467,7 @@ struct MyContactsManager: ContactsDAO {
         
         let juan = NSEntityDescription.insertNewObject(
             forEntityName: "Person",
-            into: contactsManagedObjectContext) as! Person
+            into: managedObjectContextForTask) as! Person
         
         juan.firstname = "Juan"
         juan.lastname = "Pacheco Ramirez"
@@ -480,7 +480,7 @@ struct MyContactsManager: ContactsDAO {
         
         let pedro = NSEntityDescription.insertNewObject(
             forEntityName: "Person",
-            into: contactsManagedObjectContext) as! Person
+            into: managedObjectContextForTask) as! Person
         
         pedro.firstname = "pedro"
         pedro.lastname = "Picapiedra De la Roca"

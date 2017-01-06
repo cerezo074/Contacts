@@ -138,7 +138,7 @@ extension CreatePersonViewController: UIPickerViewDataSource, UIPickerViewDelega
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         let indexPath = IndexPath(row: row, section: component)
-        return createContactViewModel.companyName(at: indexPath) ?? indepentCompanyName
+        return createContactViewModel.companyName(at: indexPath) ?? createContactViewModel.indepentCompanyName
     }
     
 }
@@ -163,7 +163,7 @@ extension CreatePersonViewController: PickerTextToolbarDelegate {
         if let rowSelected = companyTextField.pickerView?.selectedRow(inComponent: component) {
             createContactViewModel.selectCompany(IndexPath(row: rowSelected, section: component))
             let indexPath = IndexPath(row: rowSelected, section: component)
-            companyTextField.text = createContactViewModel.companyName(at: indexPath) ?? indepentCompanyName
+            companyTextField.text = createContactViewModel.companyName(at: indexPath) ?? createContactViewModel.indepentCompanyName
         }
     }
     

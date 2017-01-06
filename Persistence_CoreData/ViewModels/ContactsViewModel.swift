@@ -25,7 +25,7 @@ enum UserActionOnData {
 typealias ContactsDataStateListener = (_ state: DataState) -> ()
 typealias ContactsUserActionOnDataListener = (_ userAction: UserActionOnData) -> ()
 
-class ContactsViewModel: NSObject, ContactsDAO {
+class ContactsViewModel: NSObject, ContactsDAO, ContextHasChangedProtocol {
     
     var dataListener: ContactsDataStateListener?
     private var dataState: DataState = .Iddle {
@@ -45,23 +45,23 @@ class ContactsViewModel: NSObject, ContactsDAO {
         }
     }
     
-    private(set) var contactsManagedObjectContext: NSManagedObjectContext
+    private(set) var managedObjectContextForTask: NSManagedObjectContext
     private(set) var contactsFetchedResultsController: NSFetchedResultsController<NSFetchRequestResult>?
     var sections: Int {
         return contactsFetchedResultsController?.sections?.count ?? 0
     }
     
-    init(contactsManagedObjectContext: NSManagedObjectContext) {
-        self.contactsManagedObjectContext = contactsManagedObjectContext
+    init(managedObjectContextForTask: NSManagedObjectContext) {
+        self.managedObjectContextForTask = managedObjectContextForTask
         super.init()
-        registerForNotification()
+        registerForDidSaveNotification(obj: self)
         setUpContacts()
     }
     
     deinit {
         dataListener = nil
         userActionOnDataListener = nil
-        unregisterForNotifications()
+        unregisterForDidSaveNotification(obj: self)
     }
     
     func setUpContacts() {
@@ -72,7 +72,7 @@ class ContactsViewModel: NSObject, ContactsDAO {
         request.sortDescriptors = [firstnameSortDescriptor, lastnameSortDescriptor]
         self.contactsFetchedResultsController = NSFetchedResultsController(
             fetchRequest: request,
-            managedObjectContext: contactsManagedObjectContext,
+            managedObjectContext: managedObjectContextForTask,
             sectionNameKeyPath: nil,
             cacheName: nil)
         self.contactsFetchedResultsController?.delegate = self
@@ -114,41 +114,27 @@ class ContactsViewModel: NSObject, ContactsDAO {
             let personIdentifier = person.identifier else {
             return
         }
-        do {
-            let deletePersonRequest = createRequestWith("Person",
-                                                        "identifier ==[cd] %@",
-                                                        [personIdentifier])
-            let _ = try delete(validationRequest: deletePersonRequest)
-        } catch {
-            print("Error deleting the object \(person)\nError: \(error)")
+        let deletePersonRequest = createRequestWith("Person",
+                                                    "identifier ==[cd] %@",
+                                                    [personIdentifier])
+        delete(validationRequest: deletePersonRequest) {
+            result, error in
+            if result == false && error != nil {
+                print("Error deleting person: \(error?.localizedDescription)")
+            }
         }
     }
     
     //MARK: Notification Methods
-    
-    func registerForNotification() {
-        let storeHasChangedSelector = #selector(CreatePersonViewModel.storeHasChanged(notification:))
-        NotificationCenter.default.addObserver(self,
-                                               selector: storeHasChangedSelector,
-                                               name: NSNotification.Name.NSManagedObjectContextDidSave,
-                                               object: nil)
-    }
-    
-    func unregisterForNotifications() {
-        NotificationCenter.default.removeObserver(self,
-                                                  name: NSNotification.Name.NSManagedObjectContextDidSave,
-                                                  object: nil)
-    }
-    
-    func storeHasChanged(notification: Notification) {
+    func storeShouldChange(notification: Notification) {
         guard let moc = notification.object as? NSManagedObjectContext,
-            moc != contactsManagedObjectContext else { return }
+            moc != managedObjectContextForTask else { return }
         
-        if contactsManagedObjectContext.persistentStoreCoordinator != moc.persistentStoreCoordinator {
+        if managedObjectContextForTask.persistentStoreCoordinator != moc.persistentStoreCoordinator {
             return
         }
         
-        contactsManagedObjectContext.mergeChanges(fromContextDidSave: notification)
+        managedObjectContextForTask.mergeChanges(fromContextDidSave: notification)
     }
     
 }

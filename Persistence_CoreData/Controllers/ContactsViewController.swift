@@ -22,7 +22,7 @@ class ContactsViewController: UIViewController {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
         
         if let moc =  appDelegate.contactsController.mainContext {
-            contactsViewModel = ContactsViewModel(contactsManagedObjectContext: moc)
+            contactsViewModel = ContactsViewModel(managedObjectContextForTask: moc)
         }
         
         bindDataState()

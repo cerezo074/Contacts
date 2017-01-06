@@ -9,6 +9,28 @@
 import UIKit
 import CoreData
 
+@objc protocol ContextHasChangedProtocol {
+    func storeShouldChange(notification: Notification)
+}
+
+extension ContextHasChangedProtocol {
+    
+    func registerForDidSaveNotification(obj: Any) {
+        let selector = #selector(ContextHasChangedProtocol.storeShouldChange(notification:))
+        NotificationCenter.default.addObserver(obj,
+                                               selector: selector,
+                                               name: NSNotification.Name.NSManagedObjectContextDidSave,
+                                               object: nil)
+    }
+    
+    func unregisterForDidSaveNotification(obj: Any) {
+        NotificationCenter.default.removeObserver(obj,
+                                                  name: NSNotification.Name.NSManagedObjectContextDidSave,
+                                                  object: nil)
+    }
+    
+}
+
 let PersistentStoreWasLoadedNotification = NSNotification.Name("PersistenStoreWasLoadedNotification")
 
 class ContactDataStack: NSObject {
@@ -23,27 +45,35 @@ class ContactDataStack: NSObject {
         static let fileExtension = ".sqlite"
     }
     
-    var mainContext: NSManagedObjectContext?
-    var persistenceStoreCoordinator: NSPersistentStoreCoordinator?
+    private(set) var persistenceContext: NSManagedObjectContext?
+    private(set) var mainContext: NSManagedObjectContext?
+    
+    private(set) var managedObjectModel: NSManagedObjectModel?
+    private(set) var persistenceStoreCoordinator: NSPersistentStoreCoordinator?
     private(set) var persistenceStoreURL: URL?
     
     init(dataModel: String = ContactManagedObjectModel.name,
-         persistenStore: String = ContactPersistentStore.name
-        )
-    {
+         persistenStore: String = ContactPersistentStore.name) {
         
+        super.init()
+
         guard let managedObjectModelPath = Bundle.main.url(forResource: dataModel,
                                                        withExtension: ContactManagedObjectModel.fileExtension) else {
-                                                        assertionFailure("Error loading contact scheme path.")
+                                                        assertionFailure("Error loading scheme path.")
                                                         return
         }
         
-        guard let managedObjectModel = NSManagedObjectModel(contentsOf: managedObjectModelPath) else {
-            assertionFailure("Error loading contact scheme")
+        guard let moModel = NSManagedObjectModel(contentsOf: managedObjectModelPath) else {
+            assertionFailure("Error loading scheme")
             return
         }
         
-        let storeCoordinator = NSPersistentStoreCoordinator(managedObjectModel: managedObjectModel)
+        let storeCoordinator = NSPersistentStoreCoordinator(managedObjectModel: moModel)
+        
+        persistenceContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+        persistenceContext?.persistentStoreCoordinator = storeCoordinator
+        persistenceContext?.undoManager = nil
+        
         mainContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
         mainContext?.persistentStoreCoordinator = storeCoordinator
         mainContext?.undoManager = nil
@@ -52,6 +82,7 @@ class ContactDataStack: NSObject {
         let docURL = urls[urls.endIndex - 1]
         let storeURL = docURL.appendingPathComponent(persistenStore + ContactPersistentStore.fileExtension)
         print("DataStore path: \(storeURL)")
+        
         DispatchQueue.global().async {
             //Use this option for migrations
 //            let options = [NSMigratePersistentStoresAutomaticallyOption: true,
@@ -70,19 +101,89 @@ class ContactDataStack: NSObject {
         }
         
         persistenceStoreURL = storeURL
-        self.persistenceStoreCoordinator = storeCoordinator
+        managedObjectModel = moModel
+        persistenceStoreCoordinator = storeCoordinator
+        
+        registerForDidSaveNotification(obj: self)
     }
     
-    func saveContext() -> NSManagedObjectContext? {
-        guard let storeCoordinator = persistenceStoreCoordinator else {
-            return nil
-        }
-        
+    deinit {
+        unregisterForDidSaveNotification(obj: self)
+    }
+    
+    func saveContext() -> NSManagedObjectContext {
         let privateContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
-        privateContext.persistentStoreCoordinator = storeCoordinator
+        privateContext.parent = mainContext
         privateContext.undoManager = nil
         
         return privateContext
+    }
+    
+}
+
+extension ContactDataStack: ContextHasChangedProtocol {
+
+    func storeShouldChange(notification: Notification) {
+        guard let moc = notification.object as? NSManagedObjectContext,
+        let parent = moc.parent,
+        let main = mainContext,
+        let persistent = persistenceContext else {
+            return
+        }
+        
+        if parent == main {
+            saveChangesOnMainMOC()
+        }
+        
+        if parent == persistent {
+            saveChangesOnPersistentMOC()
+        }
+    }
+    
+    func saveChangesOnMainMOC() {
+        guard let mainMOC = self.mainContext
+            else {
+                print("You are trying to save without a mainMOC")
+                return
+        }
+        
+        if !mainMOC.hasChanges {
+            print("You doesn't have changes on main context!")
+            return
+        }
+        
+        unowned let unownedMainMOC = mainMOC
+        mainMOC.perform {
+            do {
+                try unownedMainMOC.save()
+                print("Changes was saved on main context!")
+            } catch {
+                print("Error trying to saving changes on main context: \(error)")
+            }
+        }
+    }
+    
+    func saveChangesOnPersistentMOC() {
+        guard let persistentMOC = self.persistenceContext
+            else {
+                print("You are trying to save without a persistenMOC")
+                return
+        }
+        
+        if !persistentMOC.hasChanges {
+            print("You doesn't have changes on persistent context!")
+            return
+        }
+        
+        unowned let unownedPersistentMOC = persistentMOC
+        persistentMOC.perform {
+            do {
+                try unownedPersistentMOC.save()
+                print("Changes was saved on persisten context!")
+            } catch {
+                print("Error trying to saving changes on persitence context: \(error)")
+            }
+        }
     }
     
 }
